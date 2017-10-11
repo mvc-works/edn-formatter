@@ -6,7 +6,7 @@
             [app.schema :as schema]))
 
 (def base-info
-  {:title "CoWorkflow",
+  {:title "EDN Formatter",
    :icon "http://repo-cdn.b0.upaiyun.com/logo/mvc-works.png",
    :ssr nil,
    :inline-html nil})

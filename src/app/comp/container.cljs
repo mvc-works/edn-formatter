@@ -10,6 +10,14 @@
             [reel.comp.reel :refer [comp-reel]]
             [fipp.edn :refer [pprint]]))
 
+(defn on-format [state m!]
+  (m!
+   (try
+    (-> state
+        (assoc :formatted (with-out-str (pprint (read-string (:text state)))))
+        (assoc :error nil))
+    (catch js/Error err (assoc state :error (.-message err))))))
+
 (defcomp
  comp-container
  (reel)
@@ -23,24 +31,22 @@
      (button
       {:inner-text "Format EDN",
        :style ui/button,
-       :on {:click (fn [e d! m!]
-              (m!
-               (try
-                (-> state
-                    (assoc :formatted (with-out-str (pprint (read-string (:text state)))))
-                    (assoc :error nil))
-                (catch js/Error err (assoc state :error (.-message err))))))}})
+       :on {:click (fn [e d! m!] (on-format state m!))}})
      (=< 8 nil)
      (<> span (:error state) {:color :red}))
     (div
      {:style (merge ui/row ui/flex {:width "100%"})}
      (textarea
       {:value (:text state),
-       :placeholder "Paste EDN here, and click button to format!",
+       :placeholder "Paste EDN here, press \"Command Enter\"",
        :style (merge
                ui/textarea
                {:width "50%", :font-family "Menlo,monospace", :font-size 12}),
-       :on {:input (fn [e d! m!] (m! (assoc state :text (:value e))))}})
+       :on {:input (fn [e d! m!] (m! (assoc state :text (:value e)))),
+            :keydown (fn [e d! m!]
+              (if (and (= 13 (:keycode e))
+                       (let [event (:event e)] (or (.-metaKey event) (.-ctrlKey event))))
+                (do (on-format state m!))))}})
      (=< 2 nil)
      (textarea
       {:value (:formatted state),
