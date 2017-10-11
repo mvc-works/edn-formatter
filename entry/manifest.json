@@ -1,0 +1,15 @@
+{
+  "short_name": "CoWorkflow",
+  "name": "CoWorkflow",
+  "icons": [
+    {
+      "src": "http://repo-cdn.b0.upaiyun.com/logo/mvc-works.png",
+      "sizes": "320x320"
+    }
+  ],
+  "start_url": "index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eeeeff",
+  "theme_color": "#eeeeff"
+}
