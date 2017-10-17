@@ -4,7 +4,7 @@
   "description": "Code formatter",
   "main": "index.js",
   "scripts": {
-    "cdn": "ls -1 dist | xargs -I % upx put dist/% edn-formatter/%",
+    "cdn": "rsync -avr --progress dist/* tiye.me:cdn/edn-formatter",
     "tiye": "rsync -r dist/{index.html,manifest.json} tiye.me:repo/mvc-works/edn-formatter/",
     "upload": "yarn cdn && yarn tiye",
     "release": "shadow-cljs release browser",
@@ -14,9 +14,10 @@
     "html": "node target/ssr.js",
     "hmr": "webpack-dev-server --config webpack.dev.coffee --hot-only",
     "webpack": "webpack --config webpack.release.coffee --hide-modules --progress",
-    "dev": "yarn compile-ssr && yarn html-dev && yarn hmr",
+    "dev": "yarn compile-ssr && yarn html-dev && yarn dev-manifest && yarn hmr",
     "del": "rm -rf dist/*",
     "serve": "http-server dist",
+    "dev-manifest": "cp entry/manifest.json target/",
     "manifest": "cp entry/manifest.json dist/",
     "build": "yarn del && yarn release && yarn webpack && yarn compile-ssr && yarn html && yarn manifest"
   },
