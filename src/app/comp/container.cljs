@@ -38,7 +38,8 @@
      {:style (merge ui/row ui/flex {:width "100%"})}
      (textarea
       {:value (:text state),
-       :placeholder "Paste EDN here, press \"Command Enter\"",
+       :autofocus true,
+       :placeholder "Paste EDN here, press Command Enter",
        :style (merge
                ui/textarea
                {:width "50%", :font-family "Menlo,monospace", :font-size 12}),
@@ -50,7 +51,8 @@
      (=< 2 nil)
      (textarea
       {:value (:formatted state),
-       :placeholder "Formatted edn",
+       :placeholder "Formatted edn (read only)",
+       :read-only true,
        :style (merge
                ui/textarea
                {:width "50%",
