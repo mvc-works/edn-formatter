@@ -4,7 +4,7 @@
             [cljs.reader :refer [read-string]]
             [hsl.core :refer [hsl]]
             [respo-ui.style :as ui]
-            [respo.macros :refer [defcomp <> div button span textarea pre]]
+            [respo.macros :refer [defcomp cursor-> <> div button span textarea pre]]
             [respo.comp.space :refer [=<]]
             [reel.comp.reel :refer [comp-reel]]
             [fipp.edn :refer [pprint]]))
@@ -14,6 +14,14 @@
    (try
     (-> state
         (assoc :formatted (with-out-str (pprint (read-string (:text state)))))
+        (assoc :error nil))
+    (catch js/Error err (assoc state :error (.-message err))))))
+
+(defn on-format-json [state m!]
+  (m!
+   (try
+    (-> state
+        (assoc :formatted (with-out-str (pprint (js->clj (.parse js/JSON (:text state))))))
         (assoc :error nil))
     (catch js/Error err (assoc state :error (.-message err))))))
 
@@ -31,6 +39,11 @@
       {:inner-text "Format EDN",
        :style ui/button,
        :on {:click (fn [e d! m!] (on-format state m!))}})
+     (=< 8 nil)
+     (button
+      {:inner-text "Format JSON",
+       :style ui/button,
+       :on {:click (fn [e d! m!] (on-format-json state m!))}})
      (=< 8 nil)
      (<> span (:error state) {:color :red}))
     (div
@@ -60,4 +73,4 @@
                 :white-space :pre,
                 :line-height "16px",
                 :font-size 12})})
-     (comp-reel reel {})))))
+     (cursor-> :reel comp-reel states reel {})))))
