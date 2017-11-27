@@ -3,7 +3,8 @@
   (:require [respo.render.html :refer [make-string]]
             [shell-page.core :refer [make-page spit slurp]]
             [app.comp.container :refer [comp-container]]
-            [app.schema :as schema]))
+            [app.schema :as schema]
+            [cljs.reader :refer [read-string]]))
 
 (def base-info
   {:title "EDN Formatter", :icon "http://cdn.tiye.me/logo/mvc-works.png", :ssr nil})
@@ -20,7 +21,7 @@
 
 (defn prod-page []
   (let [html-content (make-string (comp-container schema/store))
-        assets (.parse js/JSON (slurp "dist/assets.edn"))
+        assets (read-string (slurp "dist/assets.edn"))
         cdn (if previews? "" "http://cdn.tiye.me/edn-formatter/")
         prefix-cdn (fn [x] (str cdn x))]
     (make-page

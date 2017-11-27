@@ -17,11 +17,19 @@
         (assoc :error nil))
     (catch js/Error err (assoc state :error (.-message err))))))
 
-(defn on-format-json [state m!]
+(defn on-read-json [state m!]
   (m!
    (try
     (-> state
         (assoc :formatted (with-out-str (pprint (js->clj (.parse js/JSON (:text state))))))
+        (assoc :error nil))
+    (catch js/Error err (assoc state :error (.-message err))))))
+
+(defn on-format-json [state m!]
+  (m!
+   (try
+    (-> state
+        (assoc :formatted (.stringify js/JSON (.parse js/JSON (:text state)) nil 2))
         (assoc :error nil))
     (catch js/Error err (assoc state :error (.-message err))))))
 
@@ -41,7 +49,12 @@
        :on {:click (fn [e d! m!] (on-format state m!))}})
      (=< 8 nil)
      (button
-      {:inner-text "Format JSON",
+      {:inner-text "Read JSON",
+       :style ui/button,
+       :on {:click (fn [e d! m!] (on-read-json state m!))}})
+     (=< 8 nil)
+     (button
+      {:inner-text "Emit JSON",
        :style ui/button,
        :on {:click (fn [e d! m!] (on-format-json state m!))}})
      (=< 8 nil)
