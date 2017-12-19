@@ -21,7 +21,10 @@
   (m!
    (try
     (-> state
-        (assoc :formatted (with-out-str (pprint (js->clj (.parse js/JSON (:text state))))))
+        (assoc
+         :formatted
+         (with-out-str
+          (pprint (js->clj (.parse js/JSON (:text state)) :keywordize-keys true))))
         (assoc :error nil))
     (catch js/Error err (assoc state :error (.-message err))))))
 
