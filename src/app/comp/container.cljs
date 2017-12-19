@@ -96,5 +96,5 @@
                 :white-space :pre,
                 :line-height "16px",
                 :font-size 12})}))
-    (comp-inspect "state" state nil)
+    (comment comp-inspect "state" state nil)
     (cursor-> :reel comp-reel states reel {}))))
