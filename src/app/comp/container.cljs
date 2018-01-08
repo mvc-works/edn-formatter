@@ -18,17 +18,6 @@
         (assoc :error nil))
     (catch js/Error err (assoc state :error (.-message err))))))
 
-(defn on-read-json [state m!]
-  (m!
-   (try
-    (-> state
-        (assoc
-         :formatted
-         (with-out-str
-          (pprint (js->clj (.parse js/JSON (:text state)) :keywordize-keys true))))
-        (assoc :error nil))
-    (catch js/Error err (assoc state :error (.-message err))))))
-
 (defn on-format-json [state m!]
   (m!
    (try
@@ -44,6 +33,17 @@
     (if (and (= 13 (:keycode e))
              (let [event (:event e)] (or (.-metaKey event) (.-ctrlKey event))))
       (do (on-format state m!)))))
+
+(defn on-read-json [state m!]
+  (m!
+   (try
+    (-> state
+        (assoc
+         :formatted
+         (with-out-str
+          (pprint (js->clj (.parse js/JSON (:text state)) :keywordize-keys true))))
+        (assoc :error nil))
+    (catch js/Error err (assoc state :error (.-message err))))))
 
 (defcomp
  comp-container

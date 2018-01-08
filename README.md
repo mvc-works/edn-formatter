@@ -8,7 +8,7 @@ http://repo.tiye.me/mvc-works/edn-formatter/
 
 ### Workflow
 
-Workflow https://github.com/Cumulo/cumulo-workflow
+Workflow https://github.com/mvc-works/coworkflow
 
 ### License
 
