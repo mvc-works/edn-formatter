@@ -3,12 +3,21 @@
   (:require [verbosely.core :refer [verbosely!]]
             [cljs.reader :refer [read-string]]
             [hsl.core :refer [hsl]]
-            [respo-ui.style :as ui]
+            [respo-ui.core :as ui]
             [respo.macros :refer [defcomp cursor-> <> div button span textarea pre]]
             [respo.comp.space :refer [=<]]
             [respo.comp.inspect :refer [comp-inspect]]
             [reel.comp.reel :refer [comp-reel]]
-            [fipp.edn :refer [pprint]]))
+            [fipp.edn :refer [pprint]]
+            [favored-edn.core :refer [write-edn]]))
+
+(defn on-flavored-edn [state m!]
+  (m!
+   (try
+    (-> state
+        (assoc :formatted (write-edn (read-string (:formatted state))))
+        (assoc :error nil))
+    (catch js/Error err (assoc state :error (.-message err))))))
 
 (defn on-format [state m!]
   (m!
@@ -83,7 +92,12 @@
       (button
        {:inner-text "Turn JSON",
         :style ui/button,
-        :on {:click (fn [e d! m!] (on-format-json state m!))}}))
+        :on {:click (fn [e d! m!] (on-format-json state m!))}})
+      (=< 8 nil)
+      (button
+       {:inner-text "Flavored EDN",
+        :style ui/button,
+        :on {:click (fn [e d! m!] (on-flavored-edn state m!))}}))
      (textarea
       {:value (:formatted state),
        :placeholder "Formatted edn (read only)",

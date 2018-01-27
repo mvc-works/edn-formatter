@@ -1,13 +1,14 @@
 
 {:source-paths ["src"]
  :dependencies [[mvc-works/hsl          "0.1.2"]
-                [mvc-works/shell-page   "0.1.6"]
                 [mvc-works/verbosely    "0.1.2"]
-                [respo/ui               "0.2.4"]
-                [respo/reel             "0.2.2"]
+                [mvc-works/shell-page   "0.1.6"]
+                [respo                  "0.8.14"]
+                [respo/ui               "0.3.2"]
+                [respo/value            "0.2.4"]
+                [respo/reel             "0.2.4"]
                 [fipp                   "0.6.12"]
-                [respo/value            "0.2.3"]
-                [respo                  "0.8.5"]]
+                [cirru/favored-edn      "0.1.1"]]
  :open-file-command ["subl" ["%s:%s:%s" :file :line :column]]
  :builds {:browser {:target :browser
                     :output-dir "target/"
@@ -19,7 +20,7 @@
                     :devtools {:after-load app.main/reload!
                                :preloads [shadow.cljs.devtools.client.hud]
                                :http-root "target"
-                               :http-port 8080}
+                               :http-port 7000}
                     :release {:output-dir "dist/"
                               :module-hash-names 8
                               :build-options {:manifest-name "assets.edn"}}}
