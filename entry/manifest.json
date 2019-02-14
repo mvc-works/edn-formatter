@@ -1,6 +1,6 @@
 {
-  "short_name": "CoWorkflow",
-  "name": "CoWorkflow",
+  "short_name": "Calcit Workflow",
+  "name": "Calcit Workflow",
   "icons": [
     {
       "src": "http://cdn.tiye.me/logo/mvc-works.png",
@@ -8,7 +8,7 @@
     }
   ],
   "start_url": "index.html",
-  "display": "standalone",
+  "display": "fullscreen",
   "orientation": "portrait",
   "background_color": "#eeeeff",
   "theme_color": "#eeeeff"

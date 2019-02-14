@@ -1,10 +1,9 @@
 
 (ns app.comp.container
-  (:require [verbosely.core :refer [verbosely!]]
-            [cljs.reader :refer [read-string]]
+  (:require [cljs.reader :refer [read-string]]
             [hsl.core :refer [hsl]]
             [respo-ui.core :as ui]
-            [respo.macros :refer [defcomp cursor-> <> div button span textarea pre]]
+            [respo.core :refer [defcomp cursor-> <> div button span textarea pre]]
             [respo.comp.space :refer [=<]]
             [respo.comp.inspect :refer [comp-inspect]]
             [reel.comp.reel :refer [comp-reel]]
