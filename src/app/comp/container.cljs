@@ -3,12 +3,36 @@
   (:require [cljs.reader :refer [read-string]]
             [hsl.core :refer [hsl]]
             [respo-ui.core :as ui]
-            [respo.core :refer [defcomp cursor-> <> div button span textarea pre]]
+            [respo.core :refer [defcomp cursor-> list-> <> div button span textarea pre]]
             [respo.comp.space :refer [=<]]
             [respo.comp.inspect :refer [comp-inspect]]
             [reel.comp.reel :refer [comp-reel]]
             [fipp.edn :refer [pprint]]
             [favored-edn.core :refer [write-edn]]))
+
+(def display-types {:edn "EDN", :json "JSON", :flavored-edn "Flavored EDN"})
+
+(defcomp
+ comp-type-selector
+ (current-type)
+ (list->
+  {}
+  (->> display-types
+       (map
+        (fn [[k v]]
+          [k
+           (div
+            {:style {:display :inline-block,
+                     :cursor :pointer,
+                     :background-color (if (= current-type k)
+                       (hsl 200 80 60)
+                       (hsl 200 70 88)),
+                     :border-radius "16px",
+                     :padding "0 16px",
+                     :margin-right 8,
+                     :color :white},
+             :on-click (fn [e d! m!] (d! :display-type k))}
+            (<> v))])))))
 
 (defn on-flavored-edn [state m!]
   (m!
@@ -64,7 +88,7 @@
     (div
      {:style (merge ui/flex ui/column)}
      (div
-      {:style (merge ui/row-center {:padding 8, :justify-content :flex-start})}
+      {:style (merge ui/row-middle {:padding 8})}
       (button
        {:inner-text "Format EDN",
         :style ui/button,
@@ -75,7 +99,7 @@
         :style ui/button,
         :on {:click (fn [e d! m!] (on-read-json state m!))}})
       (=< 8 nil)
-      (<> span (:error state) {:color :red}))
+      (<> span (:error store) {:color :red}))
      (textarea
       {:value (:text state),
        :autofocus true,
@@ -87,16 +111,19 @@
     (div
      {:style (merge ui/flex ui/column)}
      (div
-      {:style (merge ui/row-center {:padding 8, :justify-content :flex-start})}
-      (button
-       {:inner-text "Turn JSON",
-        :style ui/button,
-        :on {:click (fn [e d! m!] (on-format-json state m!))}})
-      (=< 8 nil)
-      (button
-       {:inner-text "Flavored EDN",
-        :style ui/button,
-        :on {:click (fn [e d! m!] (on-flavored-edn state m!))}}))
+      {:style ui/row-parted}
+      (comp-type-selector (:display-type store))
+      (div
+       {:style (merge ui/row-center {:padding 8, :justify-content :flex-start})}
+       (button
+        {:inner-text "Turn JSON",
+         :style ui/button,
+         :on {:click (fn [e d! m!] (on-format-json state m!))}})
+       (=< 8 nil)
+       (button
+        {:inner-text "Flavored EDN",
+         :style ui/button,
+         :on {:click (fn [e d! m!] (on-flavored-edn state m!))}})))
      (textarea
       {:value (:formatted state),
        :placeholder "Formatted edn (read only)",
