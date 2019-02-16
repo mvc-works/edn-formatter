@@ -84,7 +84,10 @@
       {:value (:text store),
        :autofocus true,
        :placeholder "Paste EDN here, press Command Enter",
-       :style (merge ui/textarea ui/flex {:font-family ui/font-code, :font-size 12}),
+       :style (merge
+               ui/textarea
+               ui/flex
+               {:font-family ui/font-code, :font-size 12, :word-break :break-all}),
        :on-input (fn [e d! m!] (d! :text (:value e))),
        :on-keydown (on-keydown (:text store))}))
     (div
