@@ -1923,7 +1923,7 @@
           :type :expr, :by "root", :at 1550125821698, :id "KWnEKVBIb2F"
           :data {
            "T" {:type :leaf, :by "root", :at 1550125821698, :text ":icon", :id "CjInpDDYpE1"}
-           "j" {:type :leaf, :by "root", :at 1550125893837, :text "\"http://cdn.tiye.me/logo/mvc-works.png", :id "POOh41gSY53"}
+           "j" {:type :leaf, :by "BkEynDYgM", :at 1556364765874, :text "\"http://cdn.tiye.me/logo/edn-formatter.png", :id "POOh41gSY53"}
           }
          }
          "yj" {

@@ -21,11 +21,11 @@
   "license": "MIT",
   "devDependencies": {
     "http-server": "^0.11.1",
-    "shadow-cljs": "^2.7.36"
+    "shadow-cljs": "^2.8.35"
   },
   "dependencies": {
-    "copy-text-to-clipboard": "^1.0.4",
-    "feather-icons": "^4.17.0",
+    "copy-text-to-clipboard": "^2.1.0",
+    "feather-icons": "^4.21.0",
     "shortid": "^2.2.14"
   }
 }

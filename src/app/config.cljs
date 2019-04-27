@@ -20,6 +20,6 @@
    :cdn-url "http://cdn.tiye.me/edn-formatter/",
    :cdn-folder "tiye.me:cdn/edn-formatter",
    :title "EDN Formatter",
-   :icon "http://cdn.tiye.me/logo/mvc-works.png",
+   :icon "http://cdn.tiye.me/logo/edn-formatter.png",
    :storage-key "edn-formatter",
    :upload-folder "tiye.me:repo/mvc-works/edn-formatter/"})
