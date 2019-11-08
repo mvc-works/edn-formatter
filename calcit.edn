@@ -1484,6 +1484,19 @@
             :data {
              "T" {:type :leaf, :by "root", :at 1550310070725, :text "write-edn", :id "jwqF6gxJS"}
              "j" {:type :leaf, :by "root", :at 1550310090555, :text "data", :id "ryS3bojr93"}
+             "r" {
+              :type :expr, :by "BkEynDYgM", :at 1573146557697, :id "63PW9HlFK8"
+              :data {
+               "T" {:type :leaf, :by "BkEynDYgM", :at 1573146558044, :text "{}", :id "0Pzu5iHAp"}
+               "j" {
+                :type :expr, :by "BkEynDYgM", :at 1573146558329, :id "piXbIYUgMG"
+                :data {
+                 "T" {:type :leaf, :by "BkEynDYgM", :at 1573146559779, :text ":indent", :id "lGV9e_wSfL"}
+                 "j" {:type :leaf, :by "BkEynDYgM", :at 1573146560169, :text "2", :id "bjfxBj3WMm"}
+                }
+               }
+              }
+             }
             }
            }
           }

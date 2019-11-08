@@ -40,7 +40,7 @@
   (case type
     :edn (with-out-str (pprint data))
     :json (.stringify js/JSON (clj->js data) nil 2)
-    :flavored-edn (write-edn data)
+    :flavored-edn (write-edn data {:indent 2})
     (str "Unknown type: " type)))
 
 (defn on-keydown [text]
