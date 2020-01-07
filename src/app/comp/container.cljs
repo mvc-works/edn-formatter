@@ -3,16 +3,18 @@
   (:require [cljs.reader :refer [read-string]]
             [hsl.core :refer [hsl]]
             [respo-ui.core :as ui]
-            [respo.core :refer [defcomp cursor-> list-> <> div button span textarea pre]]
+            [respo.core :refer [defcomp cursor-> list-> <> div button span textarea pre a]]
             [respo.comp.space :refer [=<]]
             [respo.comp.inspect :refer [comp-inspect]]
             [reel.comp.reel :refer [comp-reel]]
             [fipp.edn :refer [pprint]]
             [favored-edn.core :refer [write-edn]]
             ["copy-text-to-clipboard" :as copy!]
-            [app.config :as config]))
+            [app.config :as config]
+            [cirru-edn.core :as cirru-edn]))
 
-(def display-types {:edn "EDN", :json "JSON", :flavored-edn "Flavored EDN"})
+(def display-types
+  {:edn "EDN", :json "JSON", :flavored-edn "Flavored EDN", :cirru-edn "Cirru EDN"})
 
 (defcomp
  comp-type-selector
@@ -41,6 +43,7 @@
     :edn (with-out-str (pprint data))
     :json (.stringify js/JSON (clj->js data) nil 2)
     :flavored-edn (write-edn data {:indent 2})
+    :cirru-edn (cirru-edn/write data)
     (str "Unknown type: " type)))
 
 (defn on-keydown [text]
@@ -79,6 +82,14 @@
            (try
             (let [data (js->clj (.parse js/JSON (:text store)) :keywordize-keys true)]
               (d! :data {:data data, :error nil}))
+            (catch js/Error err (d! :data {:data nil, :error (.-message err)}))))})
+       (=< 8 nil)
+       (a
+        {:inner-text "Read Cirru",
+         :style (merge ui/link {}),
+         :on-click (fn [e d! m!]
+           (try
+            (let [data (cirru-edn/parse (:text store))] (d! :data {:data data, :error nil}))
             (catch js/Error err (d! :data {:data nil, :error (.-message err)}))))})))
      (textarea
       {:value (:text store),
