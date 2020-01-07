@@ -14,7 +14,7 @@
     [respo/reel "0.3.5"]
     [cumulo/util "0.1.10"]
     [fipp "0.6.22"]
-    [cirru/edn "0.0.5"]
+    [cirru/edn "0.0.6-a1"]
     [cirru/favored-edn "0.1.2"]
     [org.clojure/core.incubator "0.1.4"]
   ]
