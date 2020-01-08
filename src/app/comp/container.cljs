@@ -3,7 +3,9 @@
   (:require [cljs.reader :refer [read-string]]
             [hsl.core :refer [hsl]]
             [respo-ui.core :as ui]
-            [respo.core :refer [defcomp cursor-> list-> <> div button span textarea pre a]]
+            [respo.core
+             :refer
+             [defcomp cursor-> list-> <> div button span textarea pre a defeffect]]
             [respo.comp.space :refer [=<]]
             [respo.comp.inspect :refer [comp-inspect]]
             [reel.comp.reel :refer [comp-reel]]
@@ -11,10 +13,46 @@
             [favored-edn.core :refer [write-edn]]
             ["copy-text-to-clipboard" :as copy!]
             [app.config :as config]
-            [cirru-edn.core :as cirru-edn]))
+            [cirru-edn.core :as cirru-edn]
+            ["@mvc-works/codearea" :refer [codearea]]
+            ["cson-parser/lib/stringify" :as cson-stringify]))
+
+(defeffect
+ effect-codearea
+ ()
+ (action el)
+ (when (= action :mount)
+   (if (some? el) (codearea el) (js/console.warn "Unknown target" el))))
+
+(defn on-keydown [text]
+  (fn [e d! m!]
+    (if (and (= 13 (:keycode e))
+             (let [event (:event e)] (or (.-metaKey event) (.-ctrlKey event))))
+      (try
+       (let [data (read-string text)] (d! :data {:data data, :error nil}))
+       (catch js/Error err (d! :data {:data nil, :error (.-message err)}))))))
+
+(defcomp
+ comp-input-area
+ (text)
+ [(effect-codearea)
+  (textarea
+   {:value text,
+    :autofocus true,
+    :placeholder "Paste EDN here, press Command Enter",
+    :style (merge
+            ui/textarea
+            ui/flex
+            {:font-family ui/font-code, :font-size 12, :word-break :break-all}),
+    :on-input (fn [e d! m!] (d! :text (:value e))),
+    :on-keydown (on-keydown text)})])
 
 (def display-types
-  {:edn "EDN", :json "JSON", :flavored-edn "Flavored EDN", :cirru-edn "Cirru EDN"})
+  {:edn "EDN",
+   :json "JSON",
+   :flavored-edn "Flavored EDN",
+   :cirru-edn "Cirru EDN",
+   :cson "CSON"})
 
 (defcomp
  comp-type-selector
@@ -44,15 +82,8 @@
     :json (.stringify js/JSON (clj->js data) nil 2)
     :flavored-edn (write-edn data {:indent 2})
     :cirru-edn (cirru-edn/write data)
+    :cson (cson-stringify (clj->js data) nil 2)
     (str "Unknown type: " type)))
-
-(defn on-keydown [text]
-  (fn [e d! m!]
-    (if (and (= 13 (:keycode e))
-             (let [event (:event e)] (or (.-metaKey event) (.-ctrlKey event))))
-      (try
-       (let [data (read-string text)] (d! :data {:data data, :error nil}))
-       (catch js/Error err (d! :data {:data nil, :error (.-message err)}))))))
 
 (defcomp
  comp-container
@@ -86,21 +117,21 @@
        (=< 8 nil)
        (a
         {:inner-text "Read Cirru",
-         :style (merge ui/link {}),
+         :style (merge ui/link),
          :on-click (fn [e d! m!]
            (try
             (let [data (cirru-edn/parse (:text store))] (d! :data {:data data, :error nil}))
+            (catch js/Error err (d! :data {:data nil, :error (.-message err)}))))})
+       (=< 8 nil)
+       (comment
+        a
+        {:inner-text "Read CSON",
+         :style (merge ui/link),
+         :on-click (fn [e d! m!]
+           (try
+            (let [data (CSON/parse (:text store))] (d! :data {:data data, :error nil}))
             (catch js/Error err (d! :data {:data nil, :error (.-message err)}))))})))
-     (textarea
-      {:value (:text store),
-       :autofocus true,
-       :placeholder "Paste EDN here, press Command Enter",
-       :style (merge
-               ui/textarea
-               ui/flex
-               {:font-family ui/font-code, :font-size 12, :word-break :break-all}),
-       :on-input (fn [e d! m!] (d! :text (:value e))),
-       :on-keydown (on-keydown (:text store))}))
+     (comp-input-area (:text store)))
     (div
      {:style (merge ui/flex ui/column)}
      (div
