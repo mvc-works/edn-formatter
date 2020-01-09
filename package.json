@@ -20,13 +20,15 @@
   "author": "jiyinyiyong",
   "license": "MIT",
   "devDependencies": {
-    "http-server": "^0.12.0",
+    "http-server": "^0.12.1",
     "shadow-cljs": "^2.8.83"
   },
   "dependencies": {
+    "@mvc-works/codearea": "^0.0.1-a2",
     "coffeescript": "^2.5.0",
     "copy-text-to-clipboard": "^2.1.1",
     "cson": "^6.9.0",
+    "cson-parser": "^4.0.3",
     "feather-icons": "^4.25.0",
     "shortid": "^2.2.15"
   }
