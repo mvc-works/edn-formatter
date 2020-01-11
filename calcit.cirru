@@ -1267,15 +1267,6 @@
                                     :id |0vnJpxGxwi
                                 :id |J1D4EomdBW
                             :id |MGQZ9QLq1J
-                          |yj $ {} (:type :expr) (:by |BkEynDYgM) (:at 1578502154020)
-                            :data $ {}
-                              |T $ {} (:type :leaf) (:by |BkEynDYgM) (:at 1578502154020) (:text |:on-keydown) (:id |53uDNWGBFP)
-                              |j $ {} (:type :expr) (:by |BkEynDYgM) (:at 1578502154020)
-                                :data $ {}
-                                  |T $ {} (:type :leaf) (:by |BkEynDYgM) (:at 1578502154020) (:text |on-keydown) (:id |-y1l8MkZ5U)
-                                  |j $ {} (:type :leaf) (:by |BkEynDYgM) (:at 1578502162564) (:text |text) (:id |4ri3ulU1G)
-                                :id |MNbTQ3GUDN
-                            :id |jjS9HvZrHF
                         :id |8UzGW4adF
                     :id |mcZ-piD1C
                   |D $ {} (:type :leaf) (:by |BkEynDYgM) (:at 1578502181384) (:text |[]) (:id |je5H1EzE)

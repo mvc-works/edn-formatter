@@ -24,14 +24,6 @@
  (when (= action :mount)
    (if (some? el) (codearea el) (js/console.warn "Unknown target" el))))
 
-(defn on-keydown [text]
-  (fn [e d! m!]
-    (if (and (= 13 (:keycode e))
-             (let [event (:event e)] (or (.-metaKey event) (.-ctrlKey event))))
-      (try
-       (let [data (read-string text)] (d! :data {:data data, :error nil}))
-       (catch js/Error err (d! :data {:data nil, :error (.-message err)}))))))
-
 (defcomp
  comp-input-area
  (text)
@@ -44,8 +36,7 @@
             ui/textarea
             ui/flex
             {:font-family ui/font-code, :font-size 12, :word-break :break-all}),
-    :on-input (fn [e d! m!] (d! :text (:value e))),
-    :on-keydown (on-keydown text)})])
+    :on-input (fn [e d! m!] (d! :text (:value e)))})])
 
 (def display-types
   {:edn "EDN",
@@ -159,3 +150,11 @@
                 :font-size 12})}))
     (comment comp-inspect "state" state nil)
     (when config/dev? (cursor-> :reel comp-reel states reel {})))))
+
+(defn on-keydown [text]
+  (fn [e d! m!]
+    (if (and (= 13 (:keycode e))
+             (let [event (:event e)] (or (.-metaKey event) (.-ctrlKey event))))
+      (try
+       (let [data (read-string text)] (d! :data {:data data, :error nil}))
+       (catch js/Error err (d! :data {:data nil, :error (.-message err)}))))))
