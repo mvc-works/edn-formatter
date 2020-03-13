@@ -38,6 +38,8 @@
   (repeat! 60 persist-storage!)
   (let [raw (.getItem js/localStorage (:storage-key config/site))]
     (when (some? raw) (dispatch! :hydrate-storage (read-string raw))))
+  (set! (.-showData js/window) (fn [] (js/console.info (clj->js (:data (:store @*reel))))))
+  (js/console.warn "injected window.showData showing data as js object.")
   (println "App started."))
 
 (defn reload! []

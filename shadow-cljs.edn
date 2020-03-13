@@ -6,7 +6,7 @@
     [mvc-works/hsl "0.1.2"]
     [mvc-works/shell-page "0.1.10"]
     [respo "0.11.5"]
-    [respo/ui "0.3.13"]
+    [respo/ui "0.3.14"]
     [respo/alerts "0.4.3"]
     [respo/value "0.2.5"]
     [respo/markdown "0.2.5"]
@@ -14,14 +14,10 @@
     [respo/reel "0.3.5"]
     [cumulo/util "0.1.10"]
     [fipp "0.6.22"]
-    [cirru/edn "0.0.6"]
+    [cirru/edn "0.0.7"]
     [cirru/favored-edn "0.1.2"]
     [org.clojure/core.incubator "0.1.4"]
   ]
-  :repositories {
-    "central" {:url "https://maven.aliyun.com/nexus/content/groups/public/"}
-    "clojars" {:url "https://mirrors.ustc.edu.cn/clojars/"}
-  }
   :open-file-command [
     "subl"
     ["%s:%s:%s" :file :line :column]
