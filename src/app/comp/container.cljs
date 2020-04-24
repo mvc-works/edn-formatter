@@ -5,7 +5,7 @@
             [respo-ui.core :as ui]
             [respo.core
              :refer
-             [defcomp cursor-> list-> <> div button span textarea pre a defeffect]]
+             [defcomp >> list-> <> div button span textarea pre a defeffect]]
             [respo.comp.space :refer [=<]]
             [respo.comp.inspect :refer [comp-inspect]]
             [reel.comp.reel :refer [comp-reel]]
@@ -92,7 +92,7 @@
        (button
         {:inner-text "Read EDN",
          :style (merge ui/button {:background-color nil}),
-         :on-click (fn [e d! m!]
+         :on-click (fn [e d!]
            (try
             (let [data (read-string (:text store))] (d! :data {:data data, :error nil}))
             (catch js/Error err (d! :data {:data nil, :error (.-message err)}))))})
@@ -100,7 +100,7 @@
        (button
         {:inner-text "Read JSON",
          :style (merge ui/button {:background-color nil}),
-         :on-click (fn [e d! m!]
+         :on-click (fn [e d!]
            (try
             (let [data (js->clj (.parse js/JSON (:text store)) :keywordize-keys true)]
               (d! :data {:data data, :error nil}))
@@ -109,7 +109,7 @@
        (a
         {:inner-text "Read Cirru",
          :style (merge ui/link),
-         :on-click (fn [e d! m!]
+         :on-click (fn [e d!]
            (try
             (let [data (cirru-edn/parse (:text store))] (d! :data {:data data, :error nil}))
             (catch js/Error err (d! :data {:data nil, :error (.-message err)}))))})
@@ -118,7 +118,7 @@
         a
         {:inner-text "Read CSON",
          :style (merge ui/link),
-         :on-click (fn [e d! m!]
+         :on-click (fn [e d!]
            (try
             (let [data (CSON/parse (:text store))] (d! :data {:data data, :error nil}))
             (catch js/Error err (d! :data {:data nil, :error (.-message err)}))))})))
@@ -135,7 +135,7 @@
        (button
         {:inner-text "Copy",
          :style (merge ui/button {:background-color nil}),
-         :on-click (fn [e d! m!] (copy! (display-data (:data store) (:display-type store))))})))
+         :on-click (fn [e d!] (copy! (display-data (:data store) (:display-type store))))})))
      (textarea
       {:value (display-data (:data store) (:display-type store)),
        :placeholder "Formatted edn (read only)",
@@ -149,7 +149,7 @@
                 :line-height "16px",
                 :font-size 12})}))
     (comment comp-inspect "state" state nil)
-    (when config/dev? (cursor-> :reel comp-reel states reel {})))))
+    (when config/dev? (comp-reel (>> states :reel) reel {})))))
 
 (defn on-keydown [text]
   (fn [e d! m!]
