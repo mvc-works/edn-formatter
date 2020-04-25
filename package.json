@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "watch": "shadow-cljs watch client",
-    "serve": "http-server dist -s",
     "build-cdn": "shadow-cljs clj-run build.main/build-cdn",
     "build": "shadow-cljs clj-run build.main/build",
     "upload": "node target/upload.js",
@@ -20,16 +19,15 @@
   "author": "jiyinyiyong",
   "license": "MIT",
   "devDependencies": {
-    "http-server": "^0.12.1",
-    "shadow-cljs": "^2.8.92"
+    "shadow-cljs": "^2.8.100"
   },
   "dependencies": {
     "@mvc-works/codearea": "^0.0.1",
     "coffeescript": "^2.5.1",
-    "copy-text-to-clipboard": "^2.1.1",
-    "cson": "^6.9.0",
+    "copy-text-to-clipboard": "^2.2.0",
+    "cson": "^7.0.0",
     "cson-parser": "^4.0.4",
-    "feather-icons": "^4.26.0",
+    "feather-icons": "^4.28.0",
     "shortid": "^2.2.15"
   }
 }
