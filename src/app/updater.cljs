@@ -18,4 +18,6 @@
     :display-type (assoc store :display-type op-data)
     :pick (update store :data (fn [data] (pick-from data op-data)))
     :data (-> store (assoc :data (:data op-data)) (assoc :error (:error op-data)))
+    :tidy
+      (update store :data (fn [data] (if (sequential? data) (sort (distinct data)) data)))
     store))

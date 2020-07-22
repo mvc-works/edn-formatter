@@ -139,7 +139,9 @@
              (when (not (string/blank? text))
                (d!
                 :pick
-                (as-> text t (string/trim t) (string/split t #"\s+") (map read-string t)))))))}))
+                (as-> text t (string/trim t) (string/split t #"\s+") (map read-string t)))))))})
+      (=< 8 nil)
+      (comp-link {:text "Tidy list", :on-click (fn [e d!] (d! :tidy nil))}))
      (div
       {:style (merge ui/row-middle {:padding 8, :justify-content :flex-start})}
       (comp-type-selector (:display-type store))))
