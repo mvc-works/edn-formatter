@@ -5,7 +5,7 @@
   :dependencies [
     [mvc-works/hsl "0.1.2"]
     [mvc-works/shell-page "0.1.15"]
-    [respo "0.13.0"]
+    [respo "0.13.3"]
     [respo/ui "0.3.15"]
     [respo/alerts "0.5.5"]
     [respo/value "0.3.0"]
@@ -29,7 +29,6 @@
       :modules {
         :client {:init-fn app.main/main!}
       }
-      :devtools {:after-load app.main/reload!}
       :compiler-options {:infer-externs :auto}
       :release {
         :output-dir "dist/", :module-hash-names 8
@@ -38,11 +37,6 @@
     }
     :page {
       :target :node-script, :output-to "target/page.js", :main app.page/main!
-      :devtools {:after-load app.page/main!}
-    }
-    :upload {
-      :target :node-script, :output-to "target/upload.js", :main app.upload/main!
-      :devtools {:after-load app.upload/main!}
     }
   }
 }

@@ -16,7 +16,6 @@
             [cirru-edn.core :as cirru-edn]
             ["@mvc-works/codearea" :refer [codearea]]
             ["cson-parser/lib/stringify" :as cson-stringify]
-            [respo-ui.comp :refer [comp-link comp-button]]
             [respo-alerts.core :refer [use-prompt]]
             [cljs.reader :refer [read-string]]
             [clojure.string :as string]))
@@ -34,6 +33,8 @@
            {:font-family ui/font-code, :font-size 12, :word-break :break-all}),
    :on-input (fn [e d! m!] (d! :text (:value e)))}))
 
+(def style-button {:border-radius "4px", :line-height "26px", :padding "0 12px"})
+
 (defcomp
  comp-drafter
  (states store)
@@ -43,26 +44,33 @@
    {:style ui/row-parted}
    (span {})
    (div
-    {:style (merge ui/row-middle {:padding 8})}
+    {:style (merge ui/row-middle {:padding "6px 8px"})}
     (<> span (:error store) {:color :red, :margin-right 8})
-    (comp-button
-     {:text "Read EDN",
-      :type :main,
+    (button
+     {:inner-text "Read EDN",
+      :style (merge
+              ui/button
+              style-button
+              {:background-color (hsl 200 90 64),
+               :color :white,
+               :border-color (hsl 200 90 64)}),
       :on-click (fn [e d!]
         (try
          (let [data (read-string (:text store))] (d! :data {:data data, :error nil}))
          (catch js/Error err (d! :data {:data nil, :error (.-message err)}))))})
     (=< 8 nil)
-    (comp-button
-     {:text "Read JSON",
+    (button
+     {:inner-text "Read JSON",
+      :style (merge ui/button style-button),
       :on-click (fn [e d!]
         (try
          (let [data (js->clj (.parse js/JSON (:text store)) :keywordize-keys true)]
            (d! :data {:data data, :error nil}))
          (catch js/Error err (d! :data {:data nil, :error (.-message err)}))))})
     (=< 8 nil)
-    (comp-link
-     {:text "Read Cirru",
+    (a
+     {:inner-text "Read Cirru",
+      :style ui/link,
       :on-click (fn [e d!]
         (try
          (let [data (cirru-edn/parse (:text store))] (d! :data {:data data, :error nil}))
@@ -100,10 +108,11 @@
                      :background-color (if (= current-type k)
                        (hsl 200 80 60)
                        (hsl 200 70 88)),
-                     :border-radius "16px",
-                     :padding "0 16px",
+                     :border-radius "4px",
+                     :padding "2px 12px",
                      :margin-right 8,
-                     :color :white},
+                     :color :white,
+                     :line-height "24px"},
              :on-click (fn [e d! m!] (d! :display-type k))}
             (<> v))])))))
 
@@ -126,12 +135,14 @@
      {:style ui/row-parted}
      (div
       {:style ui/row-middle}
-      (comp-link
-       {:text "Copy",
+      (a
+       {:inner-text "Copy",
+        :style ui/link,
         :on-click (fn [e d!] (copy! (display-data (:data store) (:display-type store))))})
       (=< 8 nil)
-      (comp-link
-       {:text "Pick",
+      (a
+       {:inner-text "Pick",
+        :style ui/link,
         :on-click (fn [e d!]
           ((:show picker-plugin)
            d!
@@ -141,7 +152,7 @@
                 :pick
                 (as-> text t (string/trim t) (string/split t #"\s+") (map read-string t)))))))})
       (=< 8 nil)
-      (comp-link {:text "Tidy list", :on-click (fn [e d!] (d! :tidy nil))}))
+      (a {:inner-text "Tidy list", :style ui/link, :on-click (fn [e d!] (d! :tidy nil))}))
      (div
       {:style (merge ui/row-middle {:padding 8, :justify-content :flex-start})}
       (comp-type-selector (:display-type store))))
