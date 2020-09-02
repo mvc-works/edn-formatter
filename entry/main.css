@@ -30,6 +30,22 @@ body * {
   background-color:transparent;
 }
 
+a {
+  user-select: none;
+}
+
 button:active {
-  background-color: hsl(0,0%,92%);
+  transform: scale(1.06);
+}
+
+a:active {
+  transform: scale(1.2);
+}
+
+button:hover {
+  box-shadow: 1px 1px 3px hsla(0,0%,0%,0.1);
+}
+
+a:hover {
+  text-shadow: 1px 1px 1px hsla(0,0%,0%,0.07);
 }

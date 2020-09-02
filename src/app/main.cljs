@@ -42,7 +42,9 @@
   (js/console.warn "injected window.showData showing data as js object.")
   (println "App started."))
 
-(defn reload! []
+(defn ^:dev/after-load
+  reload!
+  []
   (clear-cache!)
   (reset! *reel (refresh-reel @*reel schema/store updater))
   (println "Code updated."))
