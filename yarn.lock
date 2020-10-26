@@ -233,15 +233,15 @@ cson-parser@^4.0.5:
   dependencies:
     coffeescript "^1.10.0"
 
-cson@^7.19.0:
-  version "7.19.0"
-  resolved "https://registry.npmjs.org/cson/-/cson-7.19.0.tgz#83a848ebe5a11c80ef492383ee8b60faf80086cc"
-  integrity sha512-eJEUr3M2k6qYifxYHhurtCnKNgxCVYtScptqkfITtD37e560mLjMm/wYxFvYuiMPu8U7wG7e/9QViKlTRxmI/A==
+cson@^7.20.0:
+  version "7.20.0"
+  resolved "https://registry.npmjs.org/cson/-/cson-7.20.0.tgz#638f7ef2bd108151484d6f6613ae2717b4156226"
+  integrity sha512-K7g/86vC77mJqi6PRFhd3p8U/y0R6SsCeTJb5RpOAaQdApHxCoK5JwfZ8WeJjpOZ6lyyi8tNvh3UuC184H3GWg==
   dependencies:
     cson-parser "^4.0.5"
     extract-opts "^4.3.0"
-    requirefresh "^4.11.0"
-    safefs "^6.11.0"
+    requirefresh "^4.12.0"
+    safefs "^6.12.0"
 
 des.js@^1.0.0:
   version "1.0.1"
@@ -412,7 +412,7 @@ nanoid@^2.1.0:
   resolved "https://registry.npmjs.org/nanoid/-/nanoid-2.1.11.tgz#ec24b8a758d591561531b4176a01e3ab4f0f0280"
   integrity sha512-s/snB+WGm6uwi0WjsZdaVcuf3KJXlfGl2LcxgwkEwJF0D/BWzVWAZW/XY4bFaiR7s0Jk3FPvlnepg1H1b1UwlA==
 
-node-libs-browser@^2.0.0:
+node-libs-browser@^2.2.1:
   version "2.2.1"
   resolved "https://registry.npmjs.org/node-libs-browser/-/node-libs-browser-2.2.1.tgz#b64f513d18338625f90346d27b0d235e631f6425"
   integrity sha512-h/zcD8H9kaDZ9ALUWwlBUDo6TKF8a7qBSCSEGfjTVIYeqsioSKaAX+BN7NgiMGp6iSIXZ3PxgCu8KS3b71YK5Q==
@@ -567,10 +567,10 @@ readline-sync@^1.4.7:
   resolved "https://registry.npmjs.org/readline-sync/-/readline-sync-1.4.10.tgz#41df7fbb4b6312d673011594145705bf56d8873b"
   integrity sha512-gNva8/6UAe8QYepIQH/jQ2qn91Qj0B9sYjMBBs3QOB8F2CXcKgLxQaJRP76sWVRQt+QU+8fAkCbCvjjMFu7Ycw==
 
-requirefresh@^4.11.0:
-  version "4.12.0"
-  resolved "https://registry.npmjs.org/requirefresh/-/requirefresh-4.12.0.tgz#a6935fc1ad7704c2d5fa0eee16f51269de714d30"
-  integrity sha512-RqegEw+EQk6kZZlStezko9SkYl2W40PIUnbyvPUWa278GRGu78v8Mx39NK39DQ7WjdJTmiW+QmOqy6/mk+f9KA==
+requirefresh@^4.12.0:
+  version "4.13.0"
+  resolved "https://registry.npmjs.org/requirefresh/-/requirefresh-4.13.0.tgz#bd4edaf45bf0194cbccecbc444794d1012604f21"
+  integrity sha512-APrzWWxqnwE2Bz3ysFepAU0Dc0aYjn8jsDLFIegedn+KVCS9LykAclkf+6YaJXk3ON9l6QAm04rN+bEA89cGIg==
 
 ripemd160@^2.0.0, ripemd160@^2.0.1:
   version "2.0.2"
@@ -590,10 +590,10 @@ safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   resolved "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"
   integrity sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==
 
-safefs@^6.11.0:
-  version "6.12.0"
-  resolved "https://registry.npmjs.org/safefs/-/safefs-6.12.0.tgz#a35b5c6a75a3d8c51baf282b40ae69b2b024f1ab"
-  integrity sha512-AH5E4vT64a3C//wvyVFk3hABgefRbt2gqoW43uPlfA8LAe3Vjfkc5kaKd6O5LalIvHdDxc6pMOya6e7ZI/qJYg==
+safefs@^6.12.0:
+  version "6.13.0"
+  resolved "https://registry.npmjs.org/safefs/-/safefs-6.13.0.tgz#3dfac2d351690f53c938611ffee4d066047c18e7"
+  integrity sha512-kCx2QWEcmdglNP4sKbwcGQ4GPlZ1MTrkO+WbMKz0GUgiAeHglYYDFOxbaqoDjm0t/A7F7Aea90KLE7fz4Cxzgw==
   dependencies:
     graceful-fs "^4.2.4"
 
@@ -620,22 +620,22 @@ shadow-cljs-jar@1.3.2:
   resolved "https://registry.npmjs.org/shadow-cljs-jar/-/shadow-cljs-jar-1.3.2.tgz#97273afe1747b6a2311917c1c88d9e243c81957b"
   integrity sha512-XmeffAZHv8z7451kzeq9oKh8fh278Ak+UIOGGrapyqrFBB773xN8vMQ3O7J7TYLnb9BUwcqadKkmgaq7q6fhZg==
 
-shadow-cljs@^2.11.1:
-  version "2.11.1"
-  resolved "https://registry.npmjs.org/shadow-cljs/-/shadow-cljs-2.11.1.tgz#1658278e2fdc7e0239f9573c505d3fbcfd741a31"
-  integrity sha512-3V+mtrGQwFJcb7DIreKwmCtwLKi/a7r8++mdmSTq2z1HRmcQV9DqIY4y+TLS6HkF/GNSIH7+hyHSH8uLdvsPlQ==
+shadow-cljs@^2.11.5:
+  version "2.11.5"
+  resolved "https://registry.npmjs.org/shadow-cljs/-/shadow-cljs-2.11.5.tgz#32d4318e2e2b049701d98b7249863f61edc3e9ef"
+  integrity sha512-Z1MV7QDPGlYBKBtVehD29UMC9P8t5XWtaKmV2UvC5uhYXugmxqkCAwlThRnYoP5smfQ08a7MQpeh60WCyP3RRA==
   dependencies:
-    node-libs-browser "^2.0.0"
+    node-libs-browser "^2.2.1"
     readline-sync "^1.4.7"
     shadow-cljs-jar "1.3.2"
     source-map-support "^0.4.15"
     which "^1.3.1"
     ws "^3.0.0"
 
-shortid@^2.2.15:
-  version "2.2.15"
-  resolved "https://registry.npmjs.org/shortid/-/shortid-2.2.15.tgz#2b902eaa93a69b11120373cd42a1f1fe4437c122"
-  integrity sha512-5EaCy2mx2Jgc/Fdn9uuDuNIIfWBpzY4XIlhoqtXF6qsf+/+SGZ+FxDdX/ZsMZiWupIWNqAEmiNY4RC+LSmCeOw==
+shortid@^2.2.16:
+  version "2.2.16"
+  resolved "https://registry.npmjs.org/shortid/-/shortid-2.2.16.tgz#b742b8f0cb96406fd391c76bfc18a67a57fe5608"
+  integrity sha512-Ugt+GIZqvGXCIItnsL+lvFJOiN7RYqlGy7QE41O3YC1xbNSeDGIRO7xg2JJXIAj1cAGnOeC1r7/T9pgrtQbv4g==
   dependencies:
     nanoid "^2.1.0"
 

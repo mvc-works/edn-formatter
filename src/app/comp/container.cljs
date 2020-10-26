@@ -152,6 +152,18 @@
                 :pick
                 (as-> text t (string/trim t) (string/split t #"\s+") (map read-string t)))))))})
       (=< 8 nil)
+      (a
+       {:inner-text "Drop",
+        :style ui/link,
+        :on-click (fn [e d!]
+          ((:show picker-plugin)
+           d!
+           (fn [text]
+             (when (not (string/blank? text))
+               (d!
+                :drop
+                (as-> text t (string/trim t) (string/split t #"\s+") (map read-string t)))))))})
+      (=< 8 nil)
       (a {:inner-text "Tidy list", :style ui/link, :on-click (fn [e d!] (d! :tidy nil))}))
      (div
       {:style (merge ui/row-middle {:padding 8, :justify-content :flex-start})}
