@@ -19,14 +19,14 @@
   "author": "jiyinyiyong",
   "license": "MIT",
   "devDependencies": {
-    "shadow-cljs": "^2.11.5"
+    "shadow-cljs": "^2.11.15"
   },
   "dependencies": {
     "@mvc-works/codearea": "^0.0.2",
     "coffeescript": "^2.5.1",
-    "copy-text-to-clipboard": "^2.2.0",
+    "copy-text-to-clipboard": "^3.0.0",
     "cson": "^7.20.0",
-    "cson-parser": "^4.0.5",
+    "cson-parser": "^4.0.7",
     "feather-icons": "^4.28.0",
     "shortid": "^2.2.16"
   }
