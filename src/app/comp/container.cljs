@@ -10,7 +10,7 @@
             [respo.comp.inspect :refer [comp-inspect]]
             [reel.comp.reel :refer [comp-reel]]
             [fipp.edn :refer [pprint]]
-            [favored-edn.core :refer [write-edn]]
+            [flavored-edn.core :refer [write-edn]]
             ["copy-text-to-clipboard" :as copy!]
             [app.config :as config]
             [cirru-edn.core :as cirru-edn]
