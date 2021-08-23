@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Code formatter",
   "main": "index.js",
-  "scripts": {  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git@github.com:mvc-works/edn-formatter.git"
@@ -22,6 +22,7 @@
     "cson": "^7.20.0",
     "cson-parser": "^4.0.7",
     "feather-icons": "^4.28.0",
+    "jsedn": "^0.4.1",
     "shortid": "^2.2.16"
   }
 }

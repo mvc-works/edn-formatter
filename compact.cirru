@@ -20,6 +20,7 @@
           [] "\"@mvc-works/codearea" :refer $ [] codearea
           [] "\"cson-parser/lib/stringify" :default cson-stringify
           [] respo-alerts.core :refer $ [] use-prompt
+          "\"jsedn/jsedn" :as jsedn
       :defs $ {}
         |comp-previewer $ quote
           defcomp comp-previewer (states store)
@@ -86,8 +87,8 @@
                     :on-click $ fn (e d!)
                       try
                         let
-                            data $ parse-cirru-edn (:text store)
-                          js/console.error "\"TODO parse EDN"
+                            data $ to-calcit-data
+                              jsedn/toJS $ jsedn/parse (:text store)
                           d! :data $ {} (:data data) (:error nil)
                         fn (err)
                           d! :data $ {} (:data nil)
@@ -165,7 +166,8 @@
         |display-data $ quote
           defn display-data (data type)
             case-default type (str "\"Unknown type: " type)
-              :edn $ do (js/console.error "\"TODO EDN") (pr-str data)
+              :edn $ do
+                jsedn/encode $ to-js-data data
               :json $ js/JSON.stringify (to-js-data data) nil 2
               :cirru-edn $ format-cirru-edn data
               :cson $ cson-stringify (to-js-data data) nil 2
