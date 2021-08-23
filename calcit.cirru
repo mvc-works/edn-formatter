@@ -1224,29 +1224,34 @@
                                                           |T $ {} (:text |data) (:type :leaf) (:at 1595003403959) (:by |BkEynDYgM)
                                                           |j $ {}
                                                             :data $ {}
-                                                              |T $ {} (:text |parse-cirru-edn) (:type :leaf) (:at 1629709177079) (:by |BkEynDYgM)
-                                                              |j $ {}
+                                                              |D $ {} (:text |to-calcit-data) (:type :leaf) (:at 1629710718076) (:by |BkEynDYgM)
+                                                              |T $ {}
                                                                 :data $ {}
-                                                                  |T $ {} (:text |:text) (:type :leaf) (:at 1595003403959) (:by |BkEynDYgM)
-                                                                  |j $ {} (:text |store) (:type :leaf) (:at 1595003403959) (:by |BkEynDYgM)
+                                                                  |D $ {} (:text |jsedn/toJS) (:type :leaf) (:at 1629710702784) (:by |BkEynDYgM)
+                                                                  |T $ {}
+                                                                    :data $ {}
+                                                                      |T $ {} (:text |jsedn/parse) (:type :leaf) (:at 1629710691405) (:by |BkEynDYgM)
+                                                                      |j $ {}
+                                                                        :data $ {}
+                                                                          |T $ {} (:text |:text) (:type :leaf) (:at 1595003403959) (:by |BkEynDYgM)
+                                                                          |j $ {} (:text |store) (:type :leaf) (:at 1595003403959) (:by |BkEynDYgM)
+                                                                        :type :expr
+                                                                        :at 1595003403959
+                                                                        :by |BkEynDYgM
+                                                                    :type :expr
+                                                                    :at 1595003403959
+                                                                    :by |BkEynDYgM
                                                                 :type :expr
-                                                                :at 1595003403959
+                                                                :at 1629710696113
                                                                 :by |BkEynDYgM
                                                             :type :expr
-                                                            :at 1595003403959
+                                                            :at 1629710712533
                                                             :by |BkEynDYgM
                                                         :type :expr
                                                         :at 1595003403959
                                                         :by |BkEynDYgM
                                                     :type :expr
                                                     :at 1595003403959
-                                                    :by |BkEynDYgM
-                                                  |n $ {}
-                                                    :data $ {}
-                                                      |T $ {} (:text |js/console.error) (:type :leaf) (:at 1629709305431) (:by |BkEynDYgM)
-                                                      |j $ {} (:text "|\"TODO parse EDN") (:type :leaf) (:at 1629709311865) (:by |BkEynDYgM)
-                                                    :type :expr
-                                                    :at 1629709297060
                                                     :by |BkEynDYgM
                                                   |r $ {}
                                                     :data $ {}
@@ -2107,20 +2112,19 @@
                       |j $ {}
                         :data $ {}
                           |D $ {} (:text |do) (:type :leaf) (:at 1629709407288) (:by |BkEynDYgM)
-                          |L $ {}
-                            :data $ {}
-                              |T $ {} (:text |js/console.error) (:type :leaf) (:at 1629709412231) (:by |BkEynDYgM)
-                              |j $ {} (:text "|\"TODO EDN") (:type :leaf) (:at 1629709417498) (:by |BkEynDYgM)
-                            :type :expr
-                            :at 1629709407571
-                            :by |BkEynDYgM
                           |T $ {}
                             :data $ {}
-                              |T $ {} (:text |pr-str) (:type :leaf) (:at 1629709403366) (:by |BkEynDYgM)
-                              |j $ {} (:text |data) (:type :leaf) (:at 1550310088489) (:by |root)
+                              |D $ {} (:text |jsedn/encode) (:type :leaf) (:at 1629710969186) (:by |BkEynDYgM)
+                              |T $ {}
+                                :data $ {}
+                                  |T $ {} (:text |to-js-data) (:type :leaf) (:at 1629710958287) (:by |BkEynDYgM)
+                                  |j $ {} (:text |data) (:type :leaf) (:at 1550310088489) (:by |root)
+                                :type :expr
+                                :at 1550310039331
+                                :by |root
                             :type :expr
-                            :at 1550310039331
-                            :by |root
+                            :at 1629710960781
+                            :by |BkEynDYgM
                         :type :expr
                         :at 1629709405976
                         :by |BkEynDYgM
@@ -2611,6 +2615,14 @@
                       :by |BkEynDYgM
                   :type :expr
                   :at 1595003139214
+                  :by |BkEynDYgM
+                |yyv $ {}
+                  :data $ {}
+                    |T $ {} (:text "|\"jsedn/jsedn") (:type :leaf) (:at 1629710845285) (:by |BkEynDYgM)
+                    |j $ {} (:text |:as) (:type :leaf) (:at 1629710679627) (:by |BkEynDYgM)
+                    |r $ {} (:text |jsedn) (:type :leaf) (:at 1629710680952) (:by |BkEynDYgM)
+                  :type :expr
+                  :at 1629710677191
                   :by |BkEynDYgM
                 |xT $ {}
                   :data $ {}
@@ -3732,9 +3744,12 @@
           |reload! $ {}
             :data $ {}
               |T $ {} (:text |defn) (:type :leaf) (:at 1629709759886) (:by |BkEynDYgM)
-              |j $ {} (:type :leaf) (:by |BkEynDYgM) (:at 1629709759886) (:text |reload!)
-              |r $ {} (:type :expr) (:by |BkEynDYgM) (:at 1629709759886)
+              |j $ {} (:text |reload!) (:type :leaf) (:at 1629709759886) (:by |BkEynDYgM)
+              |r $ {}
                 :data $ {}
+                :type :expr
+                :at 1629709759886
+                :by |BkEynDYgM
               |v $ {} (:type :expr) (:by |BkEynDYgM) (:at 1629709759886)
                 :data $ {}
                   |T $ {} (:type :leaf) (:by |BkEynDYgM) (:at 1629709759886) (:text |if)
