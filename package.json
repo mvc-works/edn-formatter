@@ -3,15 +3,7 @@
   "version": "0.1.0",
   "description": "Code formatter",
   "main": "index.js",
-  "scripts": {
-    "watch": "shadow-cljs watch client",
-    "build-cdn": "shadow-cljs clj-run build.main/build-cdn",
-    "build": "shadow-cljs clj-run build.main/build",
-    "upload": "node target/upload.js",
-    "up": "yarn build-cdn && yarn upload",
-    "page": "shadow-cljs clj-run build.main/page",
-    "ln": "cd target && rm -f entry && ln -s ../entry"
-  },
+  "scripts": {  },
   "repository": {
     "type": "git",
     "url": "git@github.com:mvc-works/edn-formatter.git"
@@ -19,9 +11,11 @@
   "author": "jiyinyiyong",
   "license": "MIT",
   "devDependencies": {
-    "shadow-cljs": "^2.11.15"
+    "bottom-tip": "^0.1.2",
+    "vite": "^2.5.0"
   },
   "dependencies": {
+    "@calcit/procs": "^0.4.19",
     "@mvc-works/codearea": "^0.0.2",
     "coffeescript": "^2.5.1",
     "copy-text-to-clipboard": "^3.0.0",
