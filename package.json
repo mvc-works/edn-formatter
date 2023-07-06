@@ -15,10 +15,10 @@
     "vite": "^4.3.9"
   },
   "dependencies": {
-    "@calcit/procs": "^0.7.0-a7",
+    "@calcit/procs": "^0.7.5",
     "@mvc-works/codearea": "^0.0.3",
     "coffeescript": "^2.7.0",
-    "copy-text-to-clipboard": "^3.1.0",
+    "copy-text-to-clipboard": "^3.2.0",
     "cson": "^7.20.0",
     "cson-parser": "^4.0.9",
     "feather-icons": "^4.29.0",
