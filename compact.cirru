@@ -221,9 +221,9 @@
         |*reel $ quote
           defatom *reel $ -> reel-schema/reel (assoc :base schema/store) (assoc :store schema/store)
         |dispatch! $ quote
-          defn dispatch! (op op-data)
-            when config/dev? $ println "\"Dispatch:" op op-data
-            reset! *reel $ reel-updater updater @*reel op op-data
+          defn dispatch! (op)
+            when config/dev? $ println "\"Dispatch:" op
+            reset! *reel $ reel-updater updater @*reel op
         |main! $ quote
           defn main! ()
             println "\"Running mode:" $ if config/dev?
@@ -232,7 +232,7 @@
             render-app!
             add-watch *reel :changes $ fn (r p) (render-app!)
             listen-devtools! |a dispatch!
-            .addEventListener js/window |beforeunload persist-storage!
+            js/window.addEventListener |beforeunload persist-storage!
             ; repeat! 60 persist-storage!
             ; let
                 raw $ .getItem js/localStorage (:storage-key config/site)
@@ -240,7 +240,7 @@
                 dispatch! :hydrate-storage $ parse-cirru-edn raw
             set! (.-showData js/window)
               fn () $ js/console.info
-                to-js-data $ :data (:store @*reel)
+                :data $ :store @*reel
             js/console.warn "\"injected window.showData showing data as js object."
             println "|App started."
         |mount-target $ quote
@@ -301,25 +301,27 @@
                 map data $ fn (child) (get-in child xs)
               true data
         |updater $ quote
-          defn updater (store op op-data op-id op-time)
-            case-default op
-              do (println "\"Unknown op:" op) store
-              :states $ update-states store op-data
-              :hydrate-storage op-data
-              :text $ assoc store :text op-data
-              :display-type $ assoc store :display-type op-data
-              :pick $ update store :data
-                fn (data) (pick-from data op-data)
-              :drop $ update store :data
-                fn (data) (drop-from data op-data)
-              :data $ -> store
-                assoc :data $ :data op-data
-                assoc :error $ :error op-data
-              :tidy $ update store :data
-                fn (data)
+          defn updater (store op op-id op-time)
+            tag-match op
+                :states cursor s
+                update-states store cursor s
+              (:hydrate-storage d) d
+              (:text t) (assoc store :text t)
+              (:display-type t) (assoc store :display-type t)
+              (:pick d)
+                update store :data $ fn (data) (pick-from data d)
+              (:drop d)
+                update store :data $ fn (data) (drop-from data d)
+              (:data d)
+                -> store
+                  assoc :data $ :data d
+                  assoc :error $ :error d
+              (:tidy)
+                update store :data $ fn (data)
                   if (:list? data)
                     sort (.distinct data) &compare
                     , data
+              _ $ do (eprintln "\"Unknown op:" op) store
       :ns $ quote
         ns app.updater $ :require
           [] respo.cursor :refer $ [] update-states
