@@ -83,8 +83,8 @@
         |comp-input-area $ quote
           defcomp comp-input-area (text)
             textarea $ {} (:value text) (:autofocus true) (:placeholder "\"Paste EDN here, press Command Enter")
-              :class-name $ str-spaced css/textarea css/flex
-              :style $ {} (:font-family ui/font-code) (:font-size 12) (:word-break :break-all)
+              :class-name $ str-spaced css/textarea css/flex css/font-code!
+              :style $ {} (:font-size 12) (:word-break :break-all)
               :on-input $ fn (e d!)
                 d! :text $ :value e
         |comp-previewer $ quote
@@ -128,8 +128,8 @@
                   :value $ display-data (:data store) (:display-type store)
                   :placeholder "\"Formatted edn (read only)"
                   :read-only true
-                  :class-name $ str-spaced css/textarea css/flex css/font-code
-                  :style $ {} (:font-family ui/font-code) (:overflow :auto) (:white-space :pre) (:line-height |16px) (:font-size 12)
+                  :class-name $ str-spaced css/textarea css/flex css/font-code!
+                  :style $ {} (:overflow :auto) (:white-space :pre) (:line-height |16px) (:font-size 12)
                 .render picker-plugin
         |comp-type-selector $ quote
           defcomp comp-type-selector (current-type)
