@@ -1,7 +1,7 @@
 
 {}
   :dependencies $ {}
-    |calcit-lang/lilac |0.3.1
+    |calcit-lang/lilac |main
     |calcit-lang/memof |main
     |Respo/respo.calcit |main
     |Respo/reel.calcit |main
