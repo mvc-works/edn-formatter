@@ -16,77 +16,77 @@
                   :class-name $ str-spaced css/row css/fullscreen css/global css/flex
                   :style $ &{} :width |100%
                 comp-drafter (>> states :drafter) store
+                =< 2 nil
                 comp-previewer (>> states :previewer) store
                 when config/dev? $ comp-inspect |state store
                   {} $ :bottom 8
                 when config/dev? $ comp-reel (>> states :reel) reel ({})
         |comp-drafter $ quote
           defcomp comp-drafter (states store)
-            div
-              {} $ :class-name (str-spaced css/flex css/column)
+            let
+                handle-result $ fn (f d!)
+                  try
+                    let
+                        data $ f
+                      d! :data $ {} (:data data) (:error nil)
+                    fn (err)
+                      d! :data $ {} (:data nil)
+                        :error $ .-message err
               div
-                {} $ :class-name css/row-parted
-                span $ {}
+                {} $ :class-name (str-spaced css/flex css/column)
                 div
-                  {} (:class-name css/row-middle)
-                    :style $ {} (:padding "\"6px 8px")
-                  <> (:error store)
-                    {} (:color :red) (:margin-right 8)
-                  button $ {} (:inner-text "\"Read EDN")
-                    :class-name $ str-spaced css/button
-                    :style $ {}
-                      :background-color $ hsl 200 90 64
-                      :color :white
-                      :border-color $ hsl 200 90 64
-                    :on-click $ fn (e d!)
-                      try
-                        let
-                            data $ to-calcit-data
-                              jsedn/toJS $ jsedn/parse (:text store)
-                          d! :data $ {} (:data data) (:error nil)
-                        fn (err)
-                          d! :data $ {} (:data nil)
-                            :error $ .-message err
-                  =< 8 nil
-                  button $ {} (:inner-text "\"Read JSON") (:class-name css/button)
-                    :on-click $ fn (e d!)
-                      try
-                        let
-                            data $ keywordize-data
-                              to-calcit-data $ js/JSON.parse (:text store)
-                          d! :data $ {} (:data data) (:error nil)
-                        fn (err)
-                          d! :data $ {} (:data nil)
-                            :error $ .-message err
-                  =< 8 nil
-                  a $ {} (:inner-text "\"Read Cirru") (:class-name css/link)
-                    :on-click $ fn (e d!)
-                      try
-                        let
-                            data $ parse-cirru-edn (:text store)
-                          d! :data $ {} (:data data) (:error nil)
-                        fn (err)
-                          d! :data $ {} (:data nil)
-                            :error $ .-message err
-                  =< 8 nil
-                  ; a $ {} (:inner-text "\"Read CSON")
-                    :style $ merge ui/link
-                    :on-click $ fn (e d!)
-                      try
-                        let
-                            data $ CSON/parse (:text store)
-                          d! :data $ {} (:data data) (:error nil)
-                        fn (err)
-                          d! :data $ {} (:data nil)
-                            :error $ .-message err
-              comp-input-area $ :text store
+                  {} $ :class-name css/row-parted
+                  div
+                    {} (:class-name css/row-middle)
+                      :style $ {} (:padding "\"6px 8px")
+                    button $ {} (:inner-text "\"Read JSON") (:class-name css/button)
+                      :style $ {} (:color :white)
+                        :background-color $ hsl 200 90 64
+                        :border-color $ hsl 200 90 64
+                      :on-click $ fn (e d!)
+                        handle-result
+                          fn () $ keywordize-data
+                            to-calcit-data $ js/JSON.parse (:text store)
+                          , d!
+                    =< 8 nil
+                    button $ {} (:inner-text "\"Read Cirru") (:class-name css/button)
+                      :on-click $ fn (e d!)
+                        handle-result
+                          fn () $ parse-cirru-edn (:text store)
+                          , d!
+                    =< 8 nil
+                    a $ {} (:inner-text "\"Read EDN")
+                      :class-name $ str-spaced css/link
+                      :on-click $ fn (e d!)
+                        handle-result
+                          fn () $ to-calcit-data
+                            jsedn/toJS $ jsedn/parse (:text store)
+                          , d!
+                    ; a $ {} (:inner-text "\"Read CSON")
+                      :style $ merge ui/link
+                      :on-click $ fn (e d!)
+                        handle-result
+                          fn () $ CSON/parse (:text store)
+                          , d!
+                comp-input-area (:text store)
+                  fn (content d!)
+                    handle-result
+                      fn () $ keywordize-data
+                        to-calcit-data $ js/JSON.parse content
+                      , d!
         |comp-input-area $ quote
-          defcomp comp-input-area (text)
+          defcomp comp-input-area (text on-parse)
             textarea $ {} (:value text) (:autofocus true) (:placeholder "\"Paste EDN here, press Command Enter")
               :class-name $ str-spaced css/textarea css/flex css/font-code!
-              :style $ {} (:font-size 12) (:word-break :break-all)
+              :style $ {} (:font-size 12) (:word-break :break-all) (:border :none)
               :on-input $ fn (e d!)
                 d! :text $ :value e
+              :on-keydown $ fn (e d!)
+                if
+                  and
+                    .-metaKey $ :event e
+                    = 13 $ .-keyCode (:event e)
+                  on-parse text d!
         |comp-previewer $ quote
           defcomp comp-previewer (states store)
             let
@@ -98,7 +98,7 @@
                   {} $ :class-name css/row-parted
                   div
                     {} $ :class-name css/row-middle
-                    a $ {} (:inner-text "\"Copy") (:class-name css/link)
+                    button $ {} (:inner-text "\"Copy") (:class-name css/button)
                       :on-click $ fn (e d!)
                         copy! $ display-data (:data store) (:display-type store)
                     =< 8 nil
@@ -124,27 +124,38 @@
                     {} (:class-name css/row-middle)
                       :style $ {} (:padding 8) (:justify-content :flex-start)
                     comp-type-selector $ :display-type store
-                textarea $ {}
-                  :value $ display-data (:data store) (:display-type store)
-                  :placeholder "\"Formatted edn (read only)"
-                  :read-only true
-                  :class-name $ str-spaced css/textarea css/flex css/font-code!
-                  :style $ {} (:overflow :auto) (:white-space :pre) (:line-height |16px) (:font-size 12)
+                let
+                    e $ :error store
+                  if (some? e)
+                    div
+                      {} $ :style
+                        {} $ :padding "\"0 8px"
+                      <> e $ {} (:color :red) (:margin-right 8)
+                    textarea $ {}
+                      :value $ display-data (:data store) (:display-type store)
+                      :placeholder "\"Formatted edn (read only)"
+                      :read-only true
+                      :class-name $ str-spaced css/textarea css/flex css/font-code!
+                      :style $ {} (:overflow :auto) (:white-space :pre) (:line-height |16px) (:font-size 12) (:border :none)
                 .render picker-plugin
         |comp-type-selector $ quote
           defcomp comp-type-selector (current-type)
             list-> ({})
-              -> display-types (.to-list)
-                .map-pair $ fn (k v)
-                  [] k $ div
-                    {} (:class-name css-type-label)
-                      :style $ {}
-                        :background-color $ if (= current-type k) (hsl 200 80 60) (hsl 200 70 88)
-                      :on-click $ fn (e d!) (d! :display-type k)
-                    <> v
+              -> display-types $ map
+                fn (info)
+                  let
+                      k $ :value info
+                      v $ :name info
+                    [] k $ div
+                      {} (:class-name css-type-label)
+                        :style $ {}
+                          :color $ if (= current-type k) (hsl 200 80 50) (hsl 200 70 80)
+                        :on-click $ fn (e d!) (d! :display-type k)
+                      <> v
         |css-type-label $ quote
           defstyle css-type-label $ {}
-            "\"&" $ {} (:display :inline-block) (:cursor :pointer) (:border-radius "\"4px") (:padding "\"2px 12px") (:margin-right 8) (:color :white) (:line-height "\"24px")
+            "\"&" $ {} (:display :inline-block) (:cursor :pointer) (:font-size 13) (:opacity 0.8) (:padding "\"2px 2px") (:margin-right 8) (:line-height "\"24px")
+            "\"&:hover" $ {} (:opacity 1)
         |display-data $ quote
           defn display-data (data type)
             case-default type (str "\"Unknown type: " type)
@@ -154,7 +165,11 @@
               :cirru-edn $ format-cirru-edn data
               :cson $ cson-stringify (to-js-data data) nil 2
         |display-types $ quote
-          def display-types $ {} (:edn "\"EDN") (:json "\"JSON") (:cirru-edn "\"Cirru EDN") (:cson "\"CSON")
+          def display-types $ []
+            {} (:value :json) (:name "\"JSON")
+            {} (:value :cirru-edn) (:name "\"Cirru EDN")
+            {} (:value :cson) (:name "\"CSON")
+            {} (:value :edn) (:name "\"EDN")
         |effect-codearea $ quote
           defeffect effect-codearea () (action el)
             when (= action :mount)
@@ -214,7 +229,7 @@
         |dev? $ quote
           def dev? $ = "\"dev" (get-env "\"mode" "\"release")
         |site $ quote
-          def site $ {} (:dev-ui "\"http://localhost:8100/main.css") (:release-ui "\"http://cdn.tiye.me/favored-fonts/main.css") (:cdn-url "\"http://cdn.tiye.me/edn-formatter/") (:cdn-folder "\"tiye.me:cdn/edn-formatter") (:title "\"EDN Formatter") (:icon "\"http://cdn.tiye.me/logo/edn-formatter.png") (:storage-key "\"edn-formatter") (:upload-folder "\"tiye.me:repo/mvc-works/edn-formatter/")
+          def site $ {} (:storage-key "\"edn-formatter")
       :ns $ quote (ns app.config)
     |app.main $ {}
       :defs $ {}
@@ -235,7 +250,7 @@
             js/window.addEventListener |beforeunload persist-storage!
             ; repeat! 60 persist-storage!
             ; let
-                raw $ .getItem js/localStorage (:storage-key config/site)
+                raw $ js/localStorage.getItem (:storage-key config/site)
               when (some? raw)
                 dispatch! :hydrate-storage $ parse-cirru-edn raw
             set! (.-showData js/window)
@@ -280,7 +295,7 @@
             :text "\""
             :data nil
             :error nil
-            :display-type :edn
+            :display-type :json
       :ns $ quote (ns app.schema)
     |app.updater $ {}
       :defs $ {}
