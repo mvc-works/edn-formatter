@@ -15,7 +15,7 @@
     "vite": "^4.4.9"
   },
   "dependencies": {
-    "@calcit/procs": "^0.8.0-a2",
+    "@calcit/procs": "^0.8.0-a4",
     "@mvc-works/codearea": "^0.0.3",
     "coffeescript": "^2.7.0",
     "copy-text-to-clipboard": "^3.2.0",

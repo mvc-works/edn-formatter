@@ -1,10 +1,10 @@
 
 {} (:package |app)
-  :configs $ {} (:extension |.cljs) (:init-fn |app.main/main!) (:output |src) (:port 6001) (:reload-fn |app.main/reload!) (:storage-key |calcit.cirru) (:version |0.0.1)
+  :configs $ {} (:init-fn |app.main/main!) (:port 6001) (:reload-fn |app.main/reload!) (:storage-key |calcit.cirru) (:version |0.0.1)
     :modules $ [] |respo.calcit/ |lilac/ |memof/ |respo-ui.calcit/ |respo-markdown.calcit/ |reel.calcit/ |alerts.calcit/
   :entries $ {}
   :files $ {}
-    |app.comp.container $ {}
+    |app.comp.container $ %{} :FileEntry
       :defs $ {}
         |comp-container $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1499755354983) (:by nil)
@@ -1614,7 +1614,7 @@
                     |T $ %{} :Leaf (:at 1691558226148) (:by |BkEynDYgM) (:text |respo-ui.css)
                     |b $ %{} :Leaf (:at 1691558228472) (:by |BkEynDYgM) (:text |:as)
                     |h $ %{} :Leaf (:at 1691558227092) (:by |BkEynDYgM) (:text |css)
-    |app.config $ {}
+    |app.config $ %{} :FileEntry
       :defs $ {}
         |cdn? $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1550125821698) (:by |root)
@@ -1677,7 +1677,7 @@
           :data $ {}
             |T $ %{} :Leaf (:at 1550125821698) (:by |root) (:text |ns)
             |j $ %{} :Leaf (:at 1550125821698) (:by |root) (:text |app.config)
-    |app.main $ {}
+    |app.main $ %{} :FileEntry
       :defs $ {}
         |*reel $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1550125772346) (:by |root)
@@ -2038,7 +2038,7 @@
                     |T $ %{} :Leaf (:at 1629709768374) (:by |BkEynDYgM) (:text "|\"bottom-tip")
                     |j $ %{} :Leaf (:at 1629709768374) (:by |BkEynDYgM) (:text |:default)
                     |r $ %{} :Leaf (:at 1629709768374) (:by |BkEynDYgM) (:text |hud!)
-    |app.schema $ {}
+    |app.schema $ %{} :FileEntry
       :defs $ {}
         |store $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1499755354983) (:by nil)
@@ -2075,7 +2075,7 @@
           :data $ {}
             |T $ %{} :Leaf (:at 1499755354983) (:by |root) (:text |ns)
             |j $ %{} :Leaf (:at 1499755354983) (:by |root) (:text |app.schema)
-    |app.updater $ {}
+    |app.updater $ %{} :FileEntry
       :defs $ {}
         |drop-from $ %{} :CodeEntry (:doc |)
           :code $ %{} :Expr (:at 1603691122747) (:by |BkEynDYgM)

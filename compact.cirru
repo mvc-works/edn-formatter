@@ -4,7 +4,7 @@
     :modules $ [] |respo.calcit/ |lilac/ |memof/ |respo-ui.calcit/ |respo-markdown.calcit/ |reel.calcit/ |alerts.calcit/
   :entries $ {}
   :files $ {}
-    |app.comp.container $ {}
+    |app.comp.container $ %{} :FileEntry
       :defs $ {}
         |comp-container $ %{} :CodeEntry (:doc |)
           :code $ quote
@@ -231,7 +231,7 @@
             "\"jsedn/jsedn" :as jsedn
             respo.css :refer $ defstyle
             respo-ui.css :as css
-    |app.config $ {}
+    |app.config $ %{} :FileEntry
       :defs $ {}
         |cdn? $ %{} :CodeEntry (:doc |)
           :code $ quote
@@ -248,7 +248,7 @@
             def site $ {} (:storage-key "\"edn-formatter")
       :ns $ %{} :CodeEntry (:doc |)
         :code $ quote (ns app.config)
-    |app.main $ {}
+    |app.main $ %{} :FileEntry
       :defs $ {}
         |*reel $ %{} :CodeEntry (:doc |)
           :code $ quote
@@ -312,7 +312,7 @@
             cumulo-util.core :refer $ repeat!
             "\"./calcit.build-errors" :default build-errors
             "\"bottom-tip" :default hud!
-    |app.schema $ {}
+    |app.schema $ %{} :FileEntry
       :defs $ {}
         |store $ %{} :CodeEntry (:doc |)
           :code $ quote
@@ -324,7 +324,7 @@
               :display-type :json
       :ns $ %{} :CodeEntry (:doc |)
         :code $ quote (ns app.schema)
-    |app.updater $ {}
+    |app.updater $ %{} :FileEntry
       :defs $ {}
         |drop-from $ %{} :CodeEntry (:doc |)
           :code $ quote
