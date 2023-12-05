@@ -12,17 +12,18 @@
   "license": "MIT",
   "devDependencies": {
     "bottom-tip": "^0.1.5",
-    "vite": "^4.4.12"
+    "vite": "^5.0.5"
   },
   "dependencies": {
-    "@calcit/procs": "^0.8.0-a4",
-    "@mvc-works/codearea": "^0.0.3",
+    "@calcit/procs": "^0.8.14",
+    "@mvc-works/codearea": "^0.0.4",
     "coffeescript": "^2.7.0",
     "copy-text-to-clipboard": "^3.2.0",
-    "cson": "^7.20.0",
+    "cson": "^8.2.0",
     "cson-parser": "^4.0.9",
     "feather-icons": "^4.29.1",
     "jsedn": "^0.4.1",
+    "json5": "^2.2.3",
     "shortid": "^2.2.16"
   }
 }
