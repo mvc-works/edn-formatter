@@ -14,7 +14,7 @@
                   states $ :states store
                 div
                   {}
-                    :class-name $ str-spaced css/row css/fullscreen css/global css/flex
+                    :class-name $ str-spaced css/preset css/row css/fullscreen css/global css/flex
                     :style $ &{} :width |100%
                   comp-drafter (>> states :drafter) store
                   =< 2 nil
@@ -48,7 +48,7 @@
                         :on-click $ fn (e d!)
                           handle-result
                             fn () $ keywordize-data
-                              to-calcit-data $ js/JSON.parse (:text store)
+                              to-calcit-data $ .!parse JSON5 (:text store)
                             , d!
                       =< 8 nil
                       button $ {} (:inner-text "\"Read Cirru") (:class-name css/button)
@@ -101,11 +101,10 @@
                   div
                     {} $ :class-name css/row-parted
                     div
-                      {} $ :class-name css/row-middle
+                      {} $ :class-name (str-spaced css/row-middle css/gap8)
                       button $ {} (:inner-text "\"Copy") (:class-name css/button)
                         :on-click $ fn (e d!)
                           copy! $ display-data (:data store) (:display-type store)
-                      =< 8 nil
                       a $ {} (:inner-text "\"Pick") (:class-name css/link)
                         :on-click $ fn (e d!)
                           .show picker-plugin d! $ fn (text)
@@ -113,7 +112,6 @@
                               not $ blank? text
                               d! :pick $ parse-cirru-edn
                                 str "\"[] " $ .trim text
-                      =< 8 nil
                       a $ {} (:inner-text "\"Drop") (:class-name css/link)
                         :on-click $ fn (e d!)
                           .show picker-plugin d! $ fn (text)
@@ -121,7 +119,6 @@
                               not $ .blank? text
                               d! :drop $ parse-cirru-edn
                                 str "\"[] " $ .trim text
-                      =< 8 nil
                       a $ {} (:inner-text "\"Tidy list") (:class-name css/link)
                         :on-click $ fn (e d!) (d! :tidy nil)
                     div
@@ -169,6 +166,7 @@
                 :edn $ do
                   jsedn/encode $ to-js-data data
                 :json $ js/JSON.stringify (to-js-data data) nil 2
+                :json5 $ .!stringify JSON5 (to-js-data data) nil 2
                 :cirru-edn $ format-cirru-edn data
                 :cson $ cson-stringify (to-js-data data) nil 2
         |display-types $ %{} :CodeEntry (:doc |)
@@ -176,6 +174,7 @@
             def display-types $ []
               {} (:value :json) (:name "\"JSON")
               {} (:value :cirru-edn) (:name "\"Cirru EDN")
+              {} (:value :json5) (:name "\"JSON5")
               {} (:value :cson) (:name "\"CSON")
               {} (:value :edn) (:name "\"EDN")
         |effect-codearea $ %{} :CodeEntry (:doc |)
@@ -231,6 +230,7 @@
             "\"jsedn/jsedn" :as jsedn
             respo.css :refer $ defstyle
             respo-ui.css :as css
+            "\"json5" :default JSON5
     |app.config $ %{} :FileEntry
       :defs $ {}
         |cdn? $ %{} :CodeEntry (:doc |)
@@ -280,7 +280,7 @@
               println "|App started."
         |mount-target $ %{} :CodeEntry (:doc |)
           :code $ quote
-            def mount-target $ .querySelector js/document |.app
+            def mount-target $ js/document.querySelector |.app
         |persist-storage! $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn persist-storage! (? e)
