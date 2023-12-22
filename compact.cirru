@@ -74,7 +74,7 @@
                     fn (content d!)
                       handle-result
                         fn () $ keywordize-data
-                          to-calcit-data $ js/JSON.parse content
+                          to-calcit-data $ .!parse JSON5 content
                         , d!
         |comp-input-area $ %{} :CodeEntry (:doc |)
           :code $ quote

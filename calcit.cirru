@@ -482,7 +482,8 @@
                                               |T $ %{} :Leaf (:at 1691721333168) (:by |BkEynDYgM) (:text |to-calcit-data)
                                               |b $ %{} :Expr (:at 1691721333168) (:by |BkEynDYgM)
                                                 :data $ {}
-                                                  |T $ %{} :Leaf (:at 1691721333168) (:by |BkEynDYgM) (:text |js/JSON.parse)
+                                                  |D $ %{} :Leaf (:at 1703251869679) (:by |BkEynDYgM) (:text |.!parse)
+                                                  |T $ %{} :Leaf (:at 1703251867618) (:by |BkEynDYgM) (:text |JSON5)
                                                   |b $ %{} :Leaf (:at 1691721333168) (:by |BkEynDYgM) (:text |content)
                                   |h $ %{} :Leaf (:at 1691721328824) (:by |BkEynDYgM) (:text |d!)
         |comp-input-area $ %{} :CodeEntry (:doc |)
@@ -593,7 +594,7 @@
                                                   |T $ %{} :Leaf (:at 1691721081650) (:by |BkEynDYgM) (:text |e)
                                   |h $ %{} :Expr (:at 1691721099306) (:by |BkEynDYgM)
                                     :data $ {}
-                                      |T $ %{} :Leaf (:at 1691721101575) (:by |BkEynDYgM) (:text |on-parse)
+                                      |T $ %{} :Leaf (:at 1703251833201) (:by |BkEynDYgM) (:text |on-parse)
                                       |b $ %{} :Leaf (:at 1691721113738) (:by |BkEynDYgM) (:text |text)
                                       |h $ %{} :Leaf (:at 1691721114764) (:by |BkEynDYgM) (:text |d!)
         |comp-previewer $ %{} :CodeEntry (:doc |)
