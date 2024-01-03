@@ -291,7 +291,7 @@
         |persist-storage! $ %{} :CodeEntry (:doc |)
           :code $ quote
             defn persist-storage! (? e)
-              .setItem js/localStorage (:storage-key config/site)
+              js/localStorage.setItem (:storage-key config/site)
                 format-cirru-edn $ :store @*reel
         |reload! $ %{} :CodeEntry (:doc |)
           :code $ quote

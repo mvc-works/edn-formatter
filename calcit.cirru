@@ -1930,8 +1930,7 @@
                   |j $ %{} :Leaf (:at 1629709719945) (:by |BkEynDYgM) (:text |e)
               |v $ %{} :Expr (:at 1550125772346) (:by |root)
                 :data $ {}
-                  |T $ %{} :Leaf (:at 1550125772346) (:by |root) (:text |.setItem)
-                  |j $ %{} :Leaf (:at 1550125772346) (:by |root) (:text |js/localStorage)
+                  |j $ %{} :Leaf (:at 1704292466943) (:by |BkEynDYgM) (:text |js/localStorage.setItem)
                   |r $ %{} :Expr (:at 1550125772346) (:by |root)
                     :data $ {}
                       |T $ %{} :Leaf (:at 1550125772346) (:by |root) (:text |:storage-key)
