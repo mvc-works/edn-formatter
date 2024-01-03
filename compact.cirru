@@ -64,6 +64,13 @@
                             fn () $ to-calcit-data
                               jsedn/toJS $ jsedn/parse (:text store)
                             , d!
+                      a $ {} (:inner-text "\"Read JSON")
+                        :class-name $ str-spaced css/link
+                        :on-click $ fn (e d!)
+                          handle-result
+                            fn () $ to-calcit-data
+                              js/JSON.parse $ :text store
+                            , d!
                       ; a $ {} (:inner-text "\"Read CSON")
                         :style $ merge ui/link
                         :on-click $ fn (e d!)
