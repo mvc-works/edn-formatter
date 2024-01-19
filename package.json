@@ -12,7 +12,7 @@
   "license": "MIT",
   "devDependencies": {
     "bottom-tip": "^0.1.5",
-    "vite": "^5.0.5"
+    "vite": "^5.0.12"
   },
   "dependencies": {
     "@calcit/procs": "^0.8.14",
