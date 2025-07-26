@@ -12,10 +12,10 @@
   "license": "MIT",
   "devDependencies": {
     "bottom-tip": "^0.1.5",
-    "vite": "^7.0.3"
+    "vite": "^7.0.6"
   },
   "dependencies": {
-    "@calcit/procs": "^0.9.13",
+    "@calcit/procs": "^0.9.16",
     "@mvc-works/codearea": "^0.0.4",
     "coffeescript": "^2.7.0",
     "copy-text-to-clipboard": "^3.2.0",
