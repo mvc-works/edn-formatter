@@ -153,8 +153,8 @@
                 -> display-types $ map
                   fn (info)
                     let
-                        k $ :value info
-                        v $ :name info
+                        k $ nth info 0
+                        v $ nth info 1
                       [] k $ div
                         {} (:class-name css-type-label)
                           :style $ {}
@@ -176,14 +176,12 @@
                 :json5 $ .!stringify JSON5 (to-js-data data) nil 2
                 :cirru-edn $ format-cirru-edn data
                 :cson $ cson-stringify (to-js-data data) nil 2
+                :f-json $ let
+                    f $ new Formatter
+                  .!toString $ .!Serialize f (to-js-data data)
         |display-types $ %{} :CodeEntry (:doc |)
           :code $ quote
-            def display-types $ []
-              {} (:value :json) (:name "\"JSON")
-              {} (:value :cirru-edn) (:name "\"Cirru EDN")
-              {} (:value :json5) (:name "\"JSON5")
-              {} (:value :cson) (:name "\"CSON")
-              {} (:value :edn) (:name "\"EDN")
+            def display-types $ [] (:: :json "\"JSON") (:: :cirru-edn "\"Cirru EDN") (:: :json5 "\"JSON5") (:: :f-json "\"Fractured") (:: :cson "\"CSON") (:: :edn "\"EDN")
         |effect-codearea $ %{} :CodeEntry (:doc |)
           :code $ quote
             defeffect effect-codearea () (action el)
@@ -238,6 +236,7 @@
             respo.css :refer $ defstyle
             respo-ui.css :as css
             "\"json5" :default JSON5
+            "\"fracturedjsonjs" :refer $ Formatter
     |app.config $ %{} :FileEntry
       :defs $ {}
         |cdn? $ %{} :CodeEntry (:doc |)
