@@ -1,12 +1,12 @@
 
-{} (:package |app)
+{} (:about "|file is generated - never edit directly; learn cr edit/tree workflows before changing") (:package |app)
   :configs $ {} (:init-fn |app.main/main!) (:reload-fn |app.main/reload!) (:version |0.0.1)
     :modules $ [] |respo.calcit/ |lilac/ |memof/ |respo-ui.calcit/ |respo-markdown.calcit/ |reel.calcit/ |alerts.calcit/
   :entries $ {}
   :files $ {}
     |app.comp.container $ %{} :FileEntry
       :defs $ {}
-        |comp-container $ %{} :CodeEntry (:doc |)
+        |comp-container $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             defcomp comp-container (reel)
               let
@@ -22,7 +22,8 @@
                   when config/dev? $ comp-inspect |state store
                     {} $ :bottom 8
                   when config/dev? $ comp-reel (>> states :reel) reel ({})
-        |comp-drafter $ %{} :CodeEntry (:doc |)
+          :examples $ []
+        |comp-drafter $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             defcomp comp-drafter (states store)
               let
@@ -83,7 +84,8 @@
                         fn () $ keywordize-data
                           to-calcit-data $ .!parse JSON5 content
                         , d!
-        |comp-input-area $ %{} :CodeEntry (:doc |)
+          :examples $ []
+        |comp-input-area $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             defcomp comp-input-area (text on-parse)
               textarea $ {} (:value text) (:autofocus true) (:placeholder "\"Paste EDN here, press Command Enter")
@@ -97,7 +99,8 @@
                       .-metaKey $ :event e
                       = 13 $ .-keyCode (:event e)
                     on-parse text d!
-        |comp-previewer $ %{} :CodeEntry (:doc |)
+          :examples $ []
+        |comp-previewer $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             defcomp comp-previewer (states store)
               let
@@ -146,7 +149,8 @@
                         :class-name $ str-spaced css/textarea css/flex css/font-code!
                         :style $ {} (:overflow :auto) (:white-space :pre) (:line-height |16px) (:font-size 12) (:border :none)
                   .render picker-plugin
-        |comp-type-selector $ %{} :CodeEntry (:doc |)
+          :examples $ []
+        |comp-type-selector $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             defcomp comp-type-selector (current-type)
               list-> ({})
@@ -161,12 +165,14 @@
                             :color $ if (= current-type k) (hsl 200 80 50) (hsl 200 70 80)
                           :on-click $ fn (e d!) (d! :display-type k)
                         <> v
-        |css-type-label $ %{} :CodeEntry (:doc |)
+          :examples $ []
+        |css-type-label $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             defstyle css-type-label $ {}
               "\"&" $ {} (:display :inline-block) (:cursor :pointer) (:font-size 13) (:opacity 0.8) (:padding "\"2px 2px") (:margin-right 8) (:line-height "\"24px")
               "\"&:hover" $ {} (:opacity 1)
-        |display-data $ %{} :CodeEntry (:doc |)
+          :examples $ []
+        |display-data $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             defn display-data (data type)
               case-default type (str "\"Unknown type: " type)
@@ -179,15 +185,18 @@
                 :f-json $ let
                     f $ new Formatter
                   .!toString $ .!Serialize f (to-js-data data)
-        |display-types $ %{} :CodeEntry (:doc |)
+          :examples $ []
+        |display-types $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             def display-types $ [] (:: :json "\"JSON") (:: :cirru-edn "\"Cirru EDN") (:: :json5 "\"JSON5") (:: :f-json "\"Fractured") (:: :cson "\"CSON") (:: :edn "\"EDN")
-        |effect-codearea $ %{} :CodeEntry (:doc |)
+          :examples $ []
+        |effect-codearea $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             defeffect effect-codearea () (action el)
               when (= action :mount)
                 if (some? el) (codearea el) (js/console.warn "\"Unknown target" el)
-        |keywordize-data $ %{} :CodeEntry (:doc |)
+          :examples $ []
+        |keywordize-data $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             defn keywordize-data (xs)
               cond
@@ -196,7 +205,8 @@
                     [] k $ keywordize-data v
                 (list? xs) (map xs keywordize-data)
                 true xs
-        |on-keydown $ %{} :CodeEntry (:doc |)
+          :examples $ []
+        |on-keydown $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             defn on-keydown (text)
               fn (e d! m!)
@@ -210,13 +220,15 @@
                     let
                         data $ read-string text
                       d! :data $ {} (:data data) (:error nil)
-                    catch js/Error err $ d! :data
-                      {} (:data nil)
+                    fn (err)
+                      d! :data $ {} (:data nil)
                         :error $ .-message err
-        |style-button $ %{} :CodeEntry (:doc |)
+          :examples $ []
+        |style-button $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             def style-button $ {} (:border-radius "\"4px") (:line-height "\"26px") (:padding "\"0 12px")
-      :ns $ %{} :CodeEntry (:doc |)
+          :examples $ []
+      :ns $ %{} :NsEntry (:doc |)
         :code $ quote
           ns app.comp.container $ :require
             respo-ui.core :refer $ hsl
@@ -237,34 +249,40 @@
             respo-ui.css :as css
             "\"json5" :default JSON5
             "\"fracturedjsonjs" :refer $ Formatter
+            cljs.reader :refer $ read-string
     |app.config $ %{} :FileEntry
       :defs $ {}
-        |cdn? $ %{} :CodeEntry (:doc |)
+        |cdn? $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             def cdn? $ cond
                 exists? js/window
                 , false
               (exists? js/process) (= "\"true" js/process.env.cdn)
               :else false
-        |dev? $ %{} :CodeEntry (:doc |)
+          :examples $ []
+        |dev? $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             def dev? $ = "\"dev" (get-env "\"mode" "\"release")
-        |site $ %{} :CodeEntry (:doc |)
+          :examples $ []
+        |site $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             def site $ {} (:storage-key "\"edn-formatter")
-      :ns $ %{} :CodeEntry (:doc |)
+          :examples $ []
+      :ns $ %{} :NsEntry (:doc |)
         :code $ quote (ns app.config)
     |app.main $ %{} :FileEntry
       :defs $ {}
-        |*reel $ %{} :CodeEntry (:doc |)
+        |*reel $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             defatom *reel $ -> reel-schema/reel (assoc :base schema/store) (assoc :store schema/store)
-        |dispatch! $ %{} :CodeEntry (:doc |)
+          :examples $ []
+        |dispatch! $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             defn dispatch! (op)
               when config/dev? $ println "\"Dispatch:" op
               reset! *reel $ reel-updater updater @*reel op
-        |main! $ %{} :CodeEntry (:doc |)
+          :examples $ []
+        |main! $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             defn main! ()
               println "\"Running mode:" $ if config/dev?
@@ -284,15 +302,18 @@
                   :data $ :store @*reel
               js/console.warn "\"injected window.showData showing data as js object."
               println "|App started."
-        |mount-target $ %{} :CodeEntry (:doc |)
+          :examples $ []
+        |mount-target $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             def mount-target $ js/document.querySelector |.app
-        |persist-storage! $ %{} :CodeEntry (:doc |)
+          :examples $ []
+        |persist-storage! $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             defn persist-storage! (? e)
               js/localStorage.setItem (:storage-key config/site)
                 format-cirru-edn $ :store @*reel
-        |reload! $ %{} :CodeEntry (:doc |)
+          :examples $ []
+        |reload! $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             defn reload! () $ if (nil? build-errors)
               do (remove-watch *reel :changes) (clear-cache!)
@@ -300,10 +321,12 @@
                 reset! *reel $ refresh-reel @*reel schema/store updater
                 hud! "\"ok~" "\"Ok"
               hud! "\"error" build-errors
-        |render-app! $ %{} :CodeEntry (:doc |)
+          :examples $ []
+        |render-app! $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             defn render-app! () $ render! mount-target (comp-container @*reel) dispatch!
-      :ns $ %{} :CodeEntry (:doc |)
+          :examples $ []
+      :ns $ %{} :NsEntry (:doc |)
         :code $ quote
           ns app.main $ :require
             respo.core :refer $ render! clear-cache! realize-ssr!
@@ -320,7 +343,7 @@
             "\"bottom-tip" :default hud!
     |app.schema $ %{} :FileEntry
       :defs $ {}
-        |store $ %{} :CodeEntry (:doc |)
+        |store $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             def store $ {}
               :states $ {}
@@ -328,11 +351,12 @@
               :data nil
               :error nil
               :display-type :json
-      :ns $ %{} :CodeEntry (:doc |)
+          :examples $ []
+      :ns $ %{} :NsEntry (:doc |)
         :code $ quote (ns app.schema)
     |app.updater $ %{} :FileEntry
       :defs $ {}
-        |drop-from $ %{} :CodeEntry (:doc |)
+        |drop-from $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             defn drop-from (data xs)
               if (empty? xs) data $ cond
@@ -341,7 +365,8 @@
                 (list? data)
                   map data $ fn (child) (dissoc-in child xs)
                 :else data
-        |pick-from $ %{} :CodeEntry (:doc |)
+          :examples $ []
+        |pick-from $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             defn pick-from (data xs)
               if (empty? xs) data $ cond
@@ -350,7 +375,8 @@
                 (list? data)
                   map data $ fn (child) (get-in child xs)
                 true data
-        |updater $ %{} :CodeEntry (:doc |)
+          :examples $ []
+        |updater $ %{} :CodeEntry (:doc |) (:schema nil)
           :code $ quote
             defn updater (store op op-id op-time)
               tag-match op
@@ -373,7 +399,8 @@
                       sort (.distinct data) &compare
                       , data
                 _ $ do (eprintln "\"Unknown op:" op) store
-      :ns $ %{} :CodeEntry (:doc |)
+          :examples $ []
+      :ns $ %{} :NsEntry (:doc |)
         :code $ quote
           ns app.updater $ :require
             respo.cursor :refer $ update-states
