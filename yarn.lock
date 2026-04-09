@@ -5,14 +5,14 @@ __metadata:
   version: 8
   cacheKey: 10c0
 
-"@calcit/procs@npm:0.12.13":
-  version: 0.12.13
-  resolution: "@calcit/procs@npm:0.12.13"
+"@calcit/procs@npm:0.12.14":
+  version: 0.12.14
+  resolution: "@calcit/procs@npm:0.12.14"
   dependencies:
     "@calcit/ternary-tree": "npm:0.0.25"
     "@cirru/parser.ts": "npm:^0.0.9"
     "@cirru/writer.ts": "npm:^0.1.7"
-  checksum: 10c0/f88e063795c8bcf166e5fa9b0993edc1518b00cb1a02913e37c9f5af73508e97672f50fee4ce7633813690a5c037c7b0afd3b7dc67192517e5a16ff4d1bed1fe
+  checksum: 10c0/2976708a64b2ae844f4b45a1f79de2e87f2a92f63376e26c5d7e410e06246a1eefa375046762de99686e9d38a828488c453a20e8b7c321f45183e31f29f469b1
   languageName: node
   linkType: hard
 
@@ -462,7 +462,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "edn-formatter@workspace:."
   dependencies:
-    "@calcit/procs": "npm:0.12.13"
+    "@calcit/procs": "npm:0.12.14"
     "@mvc-works/codearea": "npm:^0.0.4"
     bottom-tip: "npm:^0.1.5"
     coffeescript: "npm:^2.7.0"
@@ -474,7 +474,7 @@ __metadata:
     jsedn: "npm:^0.4.1"
     json5: "npm:^2.2.3"
     shortid: "npm:^2.2.17"
-    vite: "npm:^8.0.5"
+    vite: "npm:^8.0.8"
   languageName: unknown
   linkType: soft
 
@@ -858,11 +858,11 @@ __metadata:
   linkType: hard
 
 "min-document@npm:^2.19.0":
-  version: 2.19.0
-  resolution: "min-document@npm:2.19.0"
+  version: 2.19.2
+  resolution: "min-document@npm:2.19.2"
   dependencies:
     dom-walk: "npm:^0.1.0"
-  checksum: 10c0/783724da716fc73a51c171865d7b29bf2b855518573f82ef61c40d214f6898d7b91b5c5419e4d22693cdb78d4615873ebc3b37d7639d3dd00ca283e5a07c7af9
+  checksum: 10c0/f6cd59ae07758583bda19cf86ffa8e072cc6e1d72d4e2a62fbf72af3ca630f66ac6a0b3e0ca2b83d5939886da2d006c309fbd0e94f17931ad117860c3fb51bf7
   languageName: node
   linkType: hard
 
@@ -1042,13 +1042,6 @@ __metadata:
   version: 1.1.1
   resolution: "picocolors@npm:1.1.1"
   checksum: 10c0/e2e3e8170ab9d7c7421969adaa7e1b31434f789afb9b3f115f6b96d91945041ac3ceb02e9ec6fe6510ff036bcc0bf91e69a1772edc0b707e12b19c0f2d6bcf58
-  languageName: node
-  linkType: hard
-
-"picomatch@npm:^4.0.3":
-  version: 4.0.3
-  resolution: "picomatch@npm:4.0.3"
-  checksum: 10c0/9582c951e95eebee5434f59e426cddd228a7b97a0161a375aed4be244bd3fe8e3a31b846808ea14ef2c8a2527a6eeab7b3946a67d5979e81694654f939473ae2
   languageName: node
   linkType: hard
 
@@ -1249,12 +1242,12 @@ __metadata:
   linkType: hard
 
 "tinyglobby@npm:^0.2.12, tinyglobby@npm:^0.2.15":
-  version: 0.2.15
-  resolution: "tinyglobby@npm:0.2.15"
+  version: 0.2.16
+  resolution: "tinyglobby@npm:0.2.16"
   dependencies:
     fdir: "npm:^6.5.0"
-    picomatch: "npm:^4.0.3"
-  checksum: 10c0/869c31490d0d88eedb8305d178d4c75e7463e820df5a9b9d388291daf93e8b1eb5de1dad1c1e139767e4269fe75f3b10d5009b2cc14db96ff98986920a186844
+    picomatch: "npm:^4.0.4"
+  checksum: 10c0/f2e09fd93dd95c41e522113b686ff6f7c13020962f8698a864a257f3d7737599afc47722b7ab726e12f8a813f779906187911ff8ee6701ede65072671a7e934b
   languageName: node
   linkType: hard
 
@@ -1313,7 +1306,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^8.0.5":
+"vite@npm:^8.0.8":
   version: 8.0.8
   resolution: "vite@npm:8.0.8"
   dependencies:

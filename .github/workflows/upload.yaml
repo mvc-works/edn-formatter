@@ -23,6 +23,8 @@ jobs:
         yarn --version
 
     - uses: calcit-lang/setup-cr@0.0.8
+      with:
+        version: 0.12.14
 
     - name: "compiles to js"
       run: >
