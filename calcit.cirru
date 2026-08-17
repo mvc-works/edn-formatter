@@ -14,7 +14,7 @@
                   store $ assert-type
                     option:unwrap $ get reel :store
                     , 'app.schema/Store
-                  states $ &struct:get store :states
+                  states $ :states store
                 div
                   {}
                     :class-name $ str-spaced css/preset css/row css/fullscreen css/global css/flex
@@ -128,7 +128,7 @@
                       {} $ :class-name (str-spaced css/row-middle css/gap8)
                       button $ {} (:inner-text |Copy) (:class-name css/button)
                         :on-click $ fn (e d!)
-                          copy! $ display-data (&struct:get store :data) (&struct:get store :display-type)
+                          copy! $ display-data (:data store) (:display-type store)
                       a $ {} (:inner-text |Pick) (:class-name css/link)
                         :on-click $ fn (e d!)
                           .show picker-plugin d! $ fn (text)
@@ -154,9 +154,9 @@
                     div
                       {} (:class-name css/row-middle)
                         :style $ {} (:padding 8) (:justify-content :flex-start)
-                      comp-type-selector $ &struct:get store :display-type
+                      comp-type-selector $ :display-type store
                   let
-                      e $ &struct:get store :error
+                      e $ :error store
                     if (option:some? e)
                       div
                         {} $ :style
@@ -164,7 +164,7 @@
                         <> (option:unwrap e)
                           {} (:color :red) (:margin-right 8)
                       textarea $ {}
-                        :value $ display-data (&struct:get store :data) (&struct:get store :display-type)
+                        :value $ display-data (:data store) (:display-type store)
                         :placeholder "|Formatted edn (read only)"
                         :read-only true
                         :class-name $ str-spaced css/textarea css/flex css/font-code!
@@ -362,7 +362,7 @@
                     option:unwrap-or (get @*reel :store) schema/store
                     , 'app.schema/Store
                 set! (.-showData w)
-                  fn () $ js/console.info (&struct:get store :data)
+                  fn () $ js/console.info (:data store)
               js/console.warn "|injected window.showData showing data as js object."
               println "|App started."
           :examples $ []
