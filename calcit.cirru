@@ -11,7 +11,7 @@
           :code $ quote
             defcomp comp-container (reel)
               let
-                  store $ assert-type
+                  store $ unsafe-coerce
                     option:unwrap $ get reel :store
                     , 'app.schema/Store
                   states $ :states store
@@ -358,7 +358,7 @@
                   dispatch! :hydrate-storage $ parse-cirru-edn raw
               let
                   w $ unsafe-coerce js/window js/JsObject
-                  store $ assert-type
+                  store $ unsafe-coerce
                     option:unwrap-or (get @*reel :store) schema/store
                     , 'app.schema/Store
                 set! (.-showData w)
@@ -442,10 +442,10 @@
         |store $ %{} 'CodeEntry (:doc |)
           :code $ quote
             def store $ %{} Store
-              :states $ {}
+              :states $ &{}
               :text |
               :data nil
-              :error %none
+              :error $ %none
               :display-type :json
           :examples $ []
           :schema $ :: 'app.schema/Store
