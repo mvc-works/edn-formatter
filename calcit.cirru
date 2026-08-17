@@ -181,8 +181,8 @@
                 -> display-types $ map
                   fn (info)
                     let
-                        k $ nth info 0
-                        v $ nth info 1
+                        k $ option:unwrap (nth info 0)
+                        v $ option:unwrap (nth info 1)
                       [] k $ div
                         {} (:class-name css-type-label)
                           :style $ {}
