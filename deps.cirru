@@ -6,5 +6,5 @@
     |Respo/respo-markdown.calcit |0.4.23
     |Respo/respo-ui.calcit |0.7.10
     |Respo/respo.calcit |0.16.83
-    |calcit-lang/lilac |0.5.6
+    |calcit-lang/lilac |0.5.7
     |calcit-lang/memof |0.0.28
