@@ -22,30 +22,30 @@ jobs:
         corepack prepare yarn@4.12.0 --activate
         yarn --version
 
-    - uses: calcit-lang/setup-cr@0.0.9
+    - uses: calcit-lang/setup-calcit@v1
 
     - name: Install deps
       run: caps --ci && yarn install --immutable
 
     - name: Validate Calcit snapshot and types
       run: |
-        cr calcit.cirru edit format
+        calcit calcit.cirru edit format
         git diff --exit-code -- calcit.cirru
         # hard gate: preprocessing must be warning-free
-        cr calcit.cirru --check-only
+        calcit calcit.cirru --check-only
         # advisory: dynamic method calls cannot be monomorphized.
         # All current hits live in external modules (respo/reel/respo-alerts)
         # or documented JS FFI / alerts-plugin boundaries, so it is not a gate here.
-        cr calcit.cirru --warn-dyn-method --check-only || true
+        calcit calcit.cirru --warn-dyn-method --check-only || true
         mkdir -p .calcit/upgrade
-        cr calcit.cirru analyze check-types --summary-only --format json > .calcit/upgrade/check-types.json
-        cr calcit.cirru analyze weak-types --only schema-dynamic,code-dynamic,code-nil --intent unresolved,declared-optional --summary-only --format json > .calcit/upgrade/weak-types.json
-        cr calcit.cirru analyze deprecated --summary-only --format json > .calcit/upgrade/deprecated.json
+        calcit calcit.cirru analyze check-types --summary-only --format json > .calcit/upgrade/check-types.json
+        calcit calcit.cirru analyze weak-types --only schema-dynamic,code-dynamic,code-nil --intent unresolved,declared-optional --summary-only --format json > .calcit/upgrade/weak-types.json
+        calcit calcit.cirru analyze deprecated --summary-only --format json > .calcit/upgrade/deprecated.json
         node scripts/check-calcit-upgrade-baseline.mjs
 
     - name: Compiles to JS
       run: >
-        cr calcit.cirru js && yarn vite build --base=./
+        calcit calcit.cirru js && yarn vite build --base=./
 
     - name: Deploy to server
       id: deploy
