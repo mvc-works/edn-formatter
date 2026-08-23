@@ -424,7 +424,7 @@
           :code $ quote
             defenum DisplayType $ :json :cirru-edn :json5 :f-json :cson :edn
           :examples $ []
-          :schema $ :: 'Enum
+          :schema $ :: 'EnumDef
         |Store $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defstruct Store
@@ -434,7 +434,7 @@
               :error $ :: 'Option 'String
               :display-type DisplayType
           :examples $ []
-          :schema $ :: 'Enum
+          :schema $ :: 'StructDef
         |store $ %{} 'CodeEntry (:doc |)
           :code $ quote
             def store $ %{} Store
