@@ -1,7 +1,8 @@
 
-{} (:about "|Machine-generated snapshot. Do not edit directly — changes will be overwritten. Use `cr query` to inspect and `cr edit`/`cr tree` to modify. Run `cr docs agents --full` first. Manual edits must follow format and schema conventions, then run `cr edit format`.") (:package |app) (:version |0.0.1)
+{} (:about "|Machine-generated snapshot. Do not edit directly — changes will be overwritten. Use `calcit query` to inspect and `calcit edit`/`calcit tree` to modify. Run `calcit docs agents --full` first. Manual edits must follow format and schema conventions, then run `calcit edit format`.") (:package |app)
   :entries $ {}
     :default $ {} (:description |) (:init-fn 'app.main/main!) (:mode :native) (:reload-fn 'app.main/reload!)
+      :feature-policy $ {}
       :modules $ [] |respo.calcit/ |lilac/ |memof/ |respo-ui.calcit/ |respo-markdown.calcit/ |reel.calcit/ |alerts.calcit/
       :type-slots $ {}
   :files $ {}
@@ -102,13 +103,12 @@
                 :class-name $ str-spaced css/textarea css/flex css/font-code!
                 :style $ {} (:font-size 12) (:word-break :break-all) (:border :none)
                 :on-input $ fn (e d!)
-                  d! :text $ option:unwrap-or (get e :value) |
+                  d! :text $ get-or e :value |
                 :on-keydown $ fn (e d!)
                   if
                     and
-                      .-metaKey $ option:unwrap-or (get e :event) nil
-                      = 13 $ .-keyCode
-                        option:unwrap-or (get e :event) nil
+                      .-metaKey $ get-or e :event nil
+                      = 13 $ .-keyCode (get-or e :event nil)
                     on-parse text d!
           :examples $ []
           :schema $ :: 'Fn
@@ -314,8 +314,7 @@
           :schema $ :: 'Bool
         |dev? $ %{} 'CodeEntry (:doc |)
           :code $ quote
-            def dev? $ = |dev
-              option:unwrap-or (get-env |mode) |release
+            def dev? $ = |dev (get-env-or |mode |release)
           :examples $ []
           :schema $ :: 'Bool
         |site $ %{} 'CodeEntry (:doc |)
@@ -358,9 +357,7 @@
                   dispatch! :hydrate-storage $ parse-cirru-edn raw
               let
                   w $ unsafe-coerce js/window js/JsObject
-                  store $ unsafe-coerce
-                    option:unwrap-or (get @*reel :store) schema/store
-                    , 'app.schema/Store
+                  store $ unsafe-coerce (get-or @*reel :store schema/store) 'app.schema/Store
                 set! (.-showData w)
                   fn () $ js/console.info (:data store)
               js/console.warn "|injected window.showData showing data as js object."
@@ -379,9 +376,8 @@
           :code $ quote
             defn persist-storage! (? e)
               let
-                  result $ js/localStorage.setItem
-                    option:unwrap-or (get config/site :storage-key) |
-                    format-cirru-edn $ option:unwrap-or (get @*reel :store) schema/store
+                  result $ js/localStorage.setItem (get-or config/site :storage-key |)
+                    format-cirru-edn $ get-or @*reel :store schema/store
                 if (js-present? result) nil nil
           :examples $ []
           :schema $ :: 'Fn
@@ -428,7 +424,7 @@
           :code $ quote
             defenum DisplayType $ :json :cirru-edn :json5 :f-json :cson :edn
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Enum
         |Store $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defstruct Store
@@ -438,7 +434,7 @@
               :error $ :: 'Option 'String
               :display-type DisplayType
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ :: 'Enum
         |store $ %{} 'CodeEntry (:doc |)
           :code $ quote
             def store $ %{} Store
@@ -493,11 +489,11 @@
                   update store :data $ fn (data) (drop-from data d)
                 (:data d)
                   -> store
-                    assoc :data $ option:unwrap-or (get d :data) nil
+                    assoc :data $ get-or d :data nil
                     assoc :error $ if
-                      nil? $ option:unwrap-or (get d :error) nil
+                      nil? $ get-or d :error nil
                       %none
-                      %some $ option:unwrap-or (get d :error) |
+                      %some $ get-or d :error |
                 (:tidy)
                   update store :data $ fn (data)
                     if (list? data)
