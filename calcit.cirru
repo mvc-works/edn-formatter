@@ -483,7 +483,7 @@
         'updater $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn updater (store op op-id op-time) (assert-type store 'app.schema/Store)
-              tag-match op
+              match op
                 (:states cursor s)
                   assoc store :states $ update-state-tree (:states store) cursor s
                 (:hydrate-storage d) d
