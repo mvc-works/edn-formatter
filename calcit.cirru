@@ -6,9 +6,9 @@
       :modules $ [] |respo.calcit/ |lilac/ |memof/ |respo-ui.calcit/ |respo-markdown.calcit/ |reel.calcit/ |alerts.calcit/
       :type-slots $ {}
   :files $ {}
-    |app.comp.container $ %{} 'FileEntry
+    'app.comp.container $ %{} 'FileEntry
       :defs $ {}
-        |comp-container $ %{} 'CodeEntry (:doc |)
+        'comp-container $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defcomp comp-container (reel)
               let
@@ -30,7 +30,7 @@
           :schema $ :: 'Fn
             {} (:return 'respo.schema/Component)
               :args $ [] 'Dynamic
-        |comp-drafter $ %{} 'CodeEntry (:doc |)
+        'comp-drafter $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defcomp comp-drafter (states store)
               let
@@ -96,25 +96,26 @@
             {} (:return 'respo.schema/Component)
               :args $ [] 'Dynamic 'app.schema/Store
               :features $ #{} :js-ffi
-        |comp-input-area $ %{} 'CodeEntry (:doc |)
+        'comp-input-area $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defcomp comp-input-area (text on-parse)
               textarea $ {} (:value text) (:autofocus true) (:placeholder "|Paste EDN here, press Command Enter")
                 :class-name $ str-spaced css/textarea css/flex css/font-code!
                 :style $ {} (:font-size 12) (:word-break :break-all) (:border :none)
                 :on-input $ fn (e d!)
-                  d! :text $ get-or e :value |
+                  d! :text $ option:unwrap-or (get e :value) |
                 :on-keydown $ fn (e d!)
                   if
                     and
-                      .-metaKey $ get-or e :event nil
-                      = 13 $ .-keyCode (get-or e :event nil)
+                      .-metaKey $ option:unwrap-or (get e :event) nil
+                      = |Enter $ str
+                        .-key $ option:unwrap-or (get e :event) nil
                     on-parse text d!
           :examples $ []
           :schema $ :: 'Fn
             {} (:return 'respo.schema/Component)
               :args $ [] 'String 'Fn
-        |comp-previewer $ %{} 'CodeEntry (:doc |)
+        'comp-previewer $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defcomp comp-previewer (states store)
               let
@@ -174,7 +175,7 @@
           :schema $ :: 'Fn
             {} (:return 'respo.schema/Component)
               :args $ [] 'Dynamic 'app.schema/Store
-        |comp-type-selector $ %{} 'CodeEntry (:doc |)
+        'comp-type-selector $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defcomp comp-type-selector (current-type)
               list-> ({})
@@ -193,14 +194,14 @@
           :schema $ :: 'Fn
             {} (:return 'respo.schema/Component)
               :args $ [] 'app.schema/DisplayType
-        |css-type-label $ %{} 'CodeEntry (:doc |)
+        'css-type-label $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defstyle css-type-label $ {}
               |& $ {} (:display :inline-block) (:cursor :pointer) (:font-size 13) (:opacity 0.8) (:padding "|2px 2px") (:margin-right 8) (:line-height |24px)
               |&:hover $ {} (:opacity 1)
           :examples $ []
           :schema $ :: 'String
-        |display-data $ %{} 'CodeEntry (:doc |)
+        'display-data $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn display-data (data type)
               hint-fn $ {}
@@ -224,12 +225,12 @@
             {} (:return 'String)
               :args $ [] 'Dynamic 'Dynamic
               :features $ #{} :js-ffi
-        |display-types $ %{} 'CodeEntry (:doc |)
+        'display-types $ %{} 'CodeEntry (:doc |)
           :code $ quote
             def display-types $ [] (:: :json |JSON) (:: :cirru-edn "|Cirru EDN") (:: :json5 |JSON5) (:: :f-json |Fractured) (:: :cson |CSON) (:: :edn |EDN)
           :examples $ []
           :schema $ :: 'Dynamic
-        |effect-codearea $ %{} 'CodeEntry (:doc |)
+        'effect-codearea $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defeffect effect-codearea () (action el)
               when (= action :mount)
@@ -239,7 +240,7 @@
             {} (:return 'respo.schema/Effect)
               :args $ []
               :features $ #{} :js-ffi
-        |keywordize-data $ %{} 'CodeEntry (:doc |)
+        'keywordize-data $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn keywordize-data (xs)
               cond
@@ -252,7 +253,7 @@
           :schema $ :: 'Fn
             {} (:return 'Dynamic)
               :args $ [] 'Dynamic
-        |on-keydown $ %{} 'CodeEntry (:doc |)
+        'on-keydown $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn on-keydown (text)
               fn (e d! m!)
@@ -273,7 +274,7 @@
           :schema $ :: 'Fn
             {} (:return 'Fn)
               :args $ [] 'String
-        |style-button $ %{} 'CodeEntry (:doc |)
+        'style-button $ %{} 'CodeEntry (:doc |)
           :code $ quote
             def style-button $ {} (:border-radius |4px) (:line-height |26px) (:padding "|0 12px")
           :examples $ []
@@ -301,9 +302,9 @@
             |fracturedjsonjs :refer $ Formatter
             cljs.reader :refer $ read-string
             app.schema :as schema
-    |app.config $ %{} 'FileEntry
+    'app.config $ %{} 'FileEntry
       :defs $ {}
-        |cdn? $ %{} 'CodeEntry (:doc |)
+        'cdn? $ %{} 'CodeEntry (:doc |)
           :code $ quote
             def cdn? $ cond
                 exists? js/window
@@ -312,26 +313,27 @@
               :else false
           :examples $ []
           :schema $ :: 'Bool
-        |dev? $ %{} 'CodeEntry (:doc |)
+        'dev? $ %{} 'CodeEntry (:doc |)
           :code $ quote
-            def dev? $ = |dev (get-env-or |mode |release)
+            def dev? $ = |dev
+              option:unwrap-or (get-env |mode) |release
           :examples $ []
           :schema $ :: 'Bool
-        |site $ %{} 'CodeEntry (:doc |)
+        'site $ %{} 'CodeEntry (:doc |)
           :code $ quote
             def site $ {} (:storage-key |edn-formatter)
           :examples $ []
           :schema $ :: 'Map
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote (ns app.config)
-    |app.main $ %{} 'FileEntry
+    'app.main $ %{} 'FileEntry
       :defs $ {}
-        |*reel $ %{} 'CodeEntry (:doc |)
+        '*reel $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defatom *reel $ -> reel-schema/reel (assoc :base schema/store) (assoc :store schema/store)
           :examples $ []
           :schema $ :: 'Ref
-        |dispatch! $ %{} 'CodeEntry (:doc |)
+        'dispatch! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn dispatch! (op)
               when config/dev? $ println |Dispatch: op
@@ -340,7 +342,7 @@
           :schema $ :: 'Fn
             {} (:return 'Unit)
               :args $ [] 'Dynamic
-        |main! $ %{} 'CodeEntry (:doc |)
+        'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn main! ()
               println "|Running mode:" $ if config/dev?
@@ -357,7 +359,9 @@
                   dispatch! :hydrate-storage $ parse-cirru-edn raw
               let
                   w $ unsafe-coerce js/window js/JsObject
-                  store $ unsafe-coerce (get-or @*reel :store schema/store) 'app.schema/Store
+                  store $ unsafe-coerce
+                    option:unwrap-or (get @*reel :store) schema/store
+                    , 'app.schema/Store
                 set! (.-showData w)
                   fn () $ js/console.info (:data store)
               js/console.warn "|injected window.showData showing data as js object."
@@ -367,24 +371,25 @@
             {} (:return 'Unit)
               :args $ []
               :features $ #{} :js-ffi
-        |mount-target $ %{} 'CodeEntry (:doc |)
+        'mount-target $ %{} 'CodeEntry (:doc |)
           :code $ quote
             def mount-target $ js/document.querySelector |.app
           :examples $ []
           :schema $ :: 'respo.dom/DomElement
-        |persist-storage! $ %{} 'CodeEntry (:doc |)
+        'persist-storage! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn persist-storage! (? e)
               let
-                  result $ js/localStorage.setItem (get-or config/site :storage-key |)
-                    format-cirru-edn $ get-or @*reel :store schema/store
-                if (js-present? result) nil nil
+                  result $ js/localStorage.setItem
+                    option:unwrap-or (get config/site :storage-key) |
+                    format-cirru-edn $ option:unwrap-or (get @*reel :store) schema/store
+                , &unit
           :examples $ []
           :schema $ :: 'Fn
             {} (:return 'Unit)
               :args $ [] (:: 'Option 'Dynamic)
               :features $ #{} :js-ffi
-        |reload! $ %{} 'CodeEntry (:doc |)
+        'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn reload! () $ if (nil? build-errors)
               do (remove-watch *reel :changes) (clear-cache!)
@@ -396,7 +401,7 @@
           :schema $ :: 'Fn
             {} (:return 'Unit)
               :args $ []
-        |render-app! $ %{} 'CodeEntry (:doc |)
+        'render-app! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn render-app! () $ render! mount-target (comp-container @*reel) dispatch!
           :examples $ []
@@ -418,14 +423,14 @@
             cumulo-util.core :refer $ repeat!
             |./calcit.build-errors :default build-errors
             |bottom-tip :default hud!
-    |app.schema $ %{} 'FileEntry
+    'app.schema $ %{} 'FileEntry
       :defs $ {}
-        |DisplayType $ %{} 'CodeEntry (:doc |)
+        'DisplayType $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defenum DisplayType $ :json :cirru-edn :json5 :f-json :cson :edn
           :examples $ []
           :schema $ :: 'EnumDef
-        |Store $ %{} 'CodeEntry (:doc |)
+        'Store $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defstruct Store
               :states $ :: 'Map 'Any
@@ -435,7 +440,7 @@
               :display-type DisplayType
           :examples $ []
           :schema $ :: 'StructDef
-        |store $ %{} 'CodeEntry (:doc |)
+        'store $ %{} 'CodeEntry (:doc |)
           :code $ quote
             def store $ %{} Store
               :states $ &{}
@@ -447,9 +452,9 @@
           :schema $ :: 'app.schema/Store
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote (ns app.schema)
-    |app.updater $ %{} 'FileEntry
+    'app.updater $ %{} 'FileEntry
       :defs $ {}
-        |drop-from $ %{} 'CodeEntry (:doc |)
+        'drop-from $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn drop-from (data xs)
               cond
@@ -462,7 +467,7 @@
           :schema $ :: 'Fn
             {} (:return 'Dynamic)
               :args $ [] 'Dynamic 'List
-        |pick-from $ %{} 'CodeEntry (:doc |)
+        'pick-from $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn pick-from (data xs)
               if (empty? xs) data $ cond
@@ -475,11 +480,12 @@
           :schema $ :: 'Fn
             {} (:return 'Dynamic)
               :args $ [] 'Dynamic 'List
-        |updater $ %{} 'CodeEntry (:doc |)
+        'updater $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn updater (store op op-id op-time) (assert-type store 'app.schema/Store)
-              tag-match op
-                (:states cursor s) (update-states store cursor s)
+              match op
+                (:states cursor s)
+                  assoc store :states $ update-state-tree (:states store) cursor s
                 (:hydrate-storage d) d
                 (:text t) (assoc store :text t)
                 (:display-type t) (assoc store :display-type t)
@@ -489,11 +495,11 @@
                   update store :data $ fn (data) (drop-from data d)
                 (:data d)
                   -> store
-                    assoc :data $ get-or d :data nil
+                    assoc :data $ option:unwrap-or (get d :data) nil
                     assoc :error $ if
-                      nil? $ get-or d :error nil
+                      nil? $ option:unwrap-or (get d :error) nil
                       %none
-                      %some $ get-or d :error |
+                      %some $ option:unwrap-or (get d :error) |
                 (:tidy)
                   update store :data $ fn (data)
                     if (list? data)
@@ -507,5 +513,5 @@
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote
           ns app.updater $ :require
-            respo.cursor :refer $ update-states
+            respo.cursor :refer $ update-state-tree
             app.schema :as schema
