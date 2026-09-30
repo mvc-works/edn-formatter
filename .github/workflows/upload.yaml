@@ -54,6 +54,8 @@ jobs:
         git diff --exit-code -- calcit.cirru
         # hard gate: preprocessing must be warning-free
         calcit calcit.cirru --check-only
+        calcit calcit.cirru fix --workflow strict --verify
+        calcit calcit.cirru analyze check-public --ns app.comp.container --ns app.config --ns app.main --ns app.schema --ns app.updater --summary-only
         calcit calcit.cirru analyze dynamic-methods
         mkdir -p .calcit/upgrade
         calcit calcit.cirru analyze check-types --summary-only --format json > .calcit/upgrade/check-types.json
@@ -119,7 +121,7 @@ jobs:
     - name: Preserve existing web entry deployment
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       id: deploy
-      uses: Pendect/action-rsyncer@v2.0.0
+      uses: Pendect/action-rsyncer@8e05ffa5c93e5d9c9b167796b26044d2c616b2b9 # v2.0.0
       env:
         DEPLOY_KEY: ${{secrets.rsync_private_key}}
       with:
