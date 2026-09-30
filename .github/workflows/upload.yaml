@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: frontend-${{ github.repository }}-${{ github.event_name == 'pull_request' && 'pr' || github.ref }}
+  cancel-in-progress: false
+
 jobs:
   test:
     runs-on: ubuntu-24.04
@@ -25,7 +29,7 @@ jobs:
     - name: Enable Corepack and Yarn Berry
       run: |
         corepack enable
-        corepack prepare yarn@4.12.0 --activate
+        corepack prepare yarn@4.18.0 --activate
         yarn --version
 
     - uses: calcit-lang/setup-calcit@ca701be5a471759e442aa053cd100720bbe1f09f # v1.5.0
@@ -37,12 +41,15 @@ jobs:
     - name: Install deps
       run: |
         set -euo pipefail
-        caps --ci
+        test ! -e compact.cirru
+        test ! -e package.cirru
+        caps --strict --ci
         yarn install --immutable
         caps verify --toolchain
 
     - name: Validate Calcit snapshot and types
       run: |
+        set -euo pipefail
         calcit calcit.cirru edit format
         git diff --exit-code -- calcit.cirru
         # hard gate: preprocessing must be warning-free
@@ -73,7 +80,9 @@ jobs:
       run: |
         set -euo pipefail
         calcit calcit.cirru js
+        node --test scripts/formatter-regression.test.mjs
         yarn vite build --base="$VITE_BASE_URL"
+        grep -Fq "$VITE_BASE_URL" dist/index.html
 
     - name: Check COS credentials
       id: cos-credentials
