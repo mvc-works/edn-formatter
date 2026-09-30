@@ -32,7 +32,7 @@ Common development commands:
 ```bash
 calcit calcit.cirru js
 yarn vite
-yarn vite build --base=./
+yarn vite build --base=https://cos-sh.tiye.me/mvc-works/edn-formatter/pr/
 ```
 
 Dependency update flow:
@@ -49,8 +49,9 @@ When changing the project, prefer this validation order:
 
 ```bash
 yarn install --immutable
+calcit calcit.cirru --check-only
 calcit calcit.cirru js
-yarn vite build --base=./
+yarn vite build --base=https://cos-sh.tiye.me/mvc-works/edn-formatter/pr/
 ```
 
 CI currently uses the same chain in `.github/workflows/upload.yaml`.
@@ -68,4 +69,4 @@ CI currently uses the same chain in `.github/workflows/upload.yaml`.
 - `app.comp.container/on-keydown` uses `read-string`, imported from `cljs.reader`.
 - This project uses Yarn Berry with `nodeLinker: node-modules`.
 - Keep `deps.cirru` `:calcit-version` aligned with `package.json` `@calcit/procs`.
-- CI deploys `dist/*`, so production build success matters more than dev-only behavior.
+- CI uploads only frontend `dist/` assets to COS and verifies the public CDN URLs. The existing rsync web-entry path remains unchanged.
