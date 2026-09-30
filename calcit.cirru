@@ -213,12 +213,12 @@
           :code $ quote $ defcomp comp-type-selector (current-type)
             list-> ({})
               []
-                [] :json $ comp-type-label current-type (%:: schema/DisplayType :json) |JSON
-                [] :cirru-edn $ comp-type-label current-type (%:: schema/DisplayType :cirru-edn) |Cirru-EDN
-                [] :json5 $ comp-type-label current-type (%:: schema/DisplayType :json5) |JSON5
-                [] :f-json $ comp-type-label current-type (%:: schema/DisplayType :f-json) |Fractured
-                [] :cson $ comp-type-label current-type (%:: schema/DisplayType :cson) |CSON
-                [] :edn $ comp-type-label current-type (%:: schema/DisplayType :edn) |EDN
+                [] :json $ comp-type-label current-type (schema/DisplayType :json) |JSON
+                [] :cirru-edn $ comp-type-label current-type (schema/DisplayType :cirru-edn) |Cirru-EDN
+                [] :json5 $ comp-type-label current-type (schema/DisplayType :json5) |JSON5
+                [] :f-json $ comp-type-label current-type (schema/DisplayType :f-json) |Fractured
+                [] :cson $ comp-type-label current-type (schema/DisplayType :cson) |CSON
+                [] :edn $ comp-type-label current-type (schema/DisplayType :edn) |EDN
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'respo.schema/Component)
             :args $ [] 'app.schema/DisplayType
@@ -236,7 +236,7 @@
               :return 'String
               :features $ #{} :js-ffi
             case-default type (str "|Unknown type: " type)
-              :edn $ do $ jsedn/encode (to-js-data data)
+              :edn $ jsedn/encode $ to-js-data data
               :json $ js/JSON.stringify (to-js-data data) nil 2
               :json5 $ stringify-json5 data
               :cirru-edn $ format-cirru-edn data
@@ -322,15 +322,6 @@
             app.schema :as schema
     'app.config $ %{} 'FileEntry
       :defs $ {}
-        'cdn? $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ def cdn?
-            cond
-                exists? js/window
-                , false
-              (exists? js/process) (= |true js/process.env.cdn)
-              :else false
-          :examples $ []
-          :schema $ :: 'Bool
         'dev? $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def dev?
             = |dev $ option:unwrap-or (get-env |mode) |release
@@ -453,12 +444,7 @@
           :schema $ :: 'StructDef
         'store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def store
-            %{} Store
-              :states $ &{}
-              :text |
-              :data nil
-              :error $ %none
-              :display-type $ %:: DisplayType :json
+            Store :states (&{}) :text | :data nil :error (Option :none) :display-type $ DisplayType :json
           :examples $ []
           :schema $ :: 'app.schema/Store
       :ns $ %{} 'NsEntry (:doc |)
@@ -500,12 +486,12 @@
               (:drop d)
                 update store :data $ fn (data) (drop-from data d)
               (:data d)
-                -> store
-                  assoc :data $ option:unwrap-or (get d :data) nil
-                  assoc :error $ if
+                struct-with store
+                  :data $ option:unwrap-or (get d :data) nil
+                  :error $ if
                     nil? $ option:unwrap-or (get d :error) nil
-                    %none
-                    %some $ option:unwrap-or (get d :error) |
+                    Option :none
+                    Option :some $ str $ option:unwrap-or (get d :error) |
               (:tidy)
                 update store :data $ fn (data)
                   if (list? data)
