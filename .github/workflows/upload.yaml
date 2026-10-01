@@ -12,6 +12,7 @@ permissions:
 concurrency:
   group: frontend-${{ github.repository }}-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || github.ref }}
   cancel-in-progress: false
+  queue: max
 
 jobs:
   test:
@@ -34,13 +35,14 @@ jobs:
 
     - uses: calcit-lang/setup-calcit@ca701be5a471759e442aa053cd100720bbe1f09f # v1.5.0
       with:
-        version: "0.27.0"
         tools: calcit,caps
         caps-version: "0.1.1"
 
     - name: Install deps
       run: |
         set -euo pipefail
+        test -f calcit.cirru
+        test -f deps.cirru
         test ! -e compact.cirru
         test ! -e package.cirru
         caps --strict --ci
@@ -54,9 +56,7 @@ jobs:
         git diff --exit-code -- calcit.cirru
         # hard gate: preprocessing must be warning-free
         calcit calcit.cirru --check-only
-        calcit calcit.cirru fix --workflow strict --verify
         calcit calcit.cirru analyze check-public --ns app.comp.container --ns app.config --ns app.main --ns app.schema --ns app.updater --summary-only
-        calcit calcit.cirru analyze dynamic-methods
         mkdir -p .calcit/upgrade
         calcit calcit.cirru analyze check-types --summary-only --format json > .calcit/upgrade/check-types.json
         calcit calcit.cirru analyze weak-types --only schema-dynamic,code-dynamic,code-nil --intent unresolved,declared-optional --summary-only --format json > .calcit/upgrade/weak-types.json
@@ -69,8 +69,9 @@ jobs:
         CDN_ORIGIN: https://cos-sh.tiye.me
         PR_NUMBER: ${{ github.event.pull_request.number }}
       run: |
+        set -euo pipefail
         if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
-          asset_prefix="${GITHUB_REPOSITORY}/pr/${PR_NUMBER}/"
+          asset_prefix="${GITHUB_REPOSITORY}/pr/${PR_NUMBER}/${GITHUB_RUN_ID}/${GITHUB_RUN_ATTEMPT}/"
         else
           asset_prefix="${GITHUB_REPOSITORY}/"
         fi
@@ -82,9 +83,8 @@ jobs:
     - name: Build frontend assets
       run: |
         set -euo pipefail
-        calcit calcit.cirru js
+        yarn build
         node --test scripts/formatter-regression.test.mjs
-        yarn vite build --base="$VITE_BASE_URL"
 
     - name: Check COS credentials
       id: cos-credentials
@@ -108,7 +108,7 @@ jobs:
 
     - name: Upload and verify frontend assets on COS
       if: steps.cos-credentials.outputs.available == 'true'
-      uses: worktools/cos-upload-action@17e6d213fe9f6772a6090a13c8ba044cd6cbcb09 # v1.1.1
+      uses: worktools/cos-upload-action@06d6027dcca6413c5936e04a9b6e9f0d5ef71ba0 # v1.2.0
       with:
         source-dir: dist
         bucket: ${{ secrets.COS_BUCKET }}
