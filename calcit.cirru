@@ -3,9 +3,9 @@
   :about "|Machine-generated snapshot. Do not edit directly — changes will be overwritten. Use `calcit query` to inspect and `calcit edit`/`calcit tree` to modify. Run `calcit docs agents --contract` before mutations; use `--full` for first orientation or changed contract digest. Manual edits must follow format and schema conventions, then run `calcit edit format`."
   :package |app
   :entries $ {} $ :default
-    {} (:description |) (:init-fn 'app.main/main!) (:mode :native) (:reload-fn 'app.main/reload!)
+    {} (:description |) (:init-fn 'app.main/main!) (:mode :native) (:reload-fn 'app.main/reload!) (:target :browser)
       :feature-policy $ {}
-      :modules $ [] |respo.calcit/ |respo-ui.calcit/ |respo-markdown.calcit/ |reel.calcit/ |alerts.calcit/
+      :modules $ [] |respo.calcit/ |respo-ui.calcit/ |reel.calcit/ |alerts.calcit/
       :type-slots $ {}
   :files $ {}
     'app.comp.container $ %{} 'FileEntry
@@ -67,9 +67,9 @@
                   try
                     let
                         data $ f
-                      d! :data $ {} (:data data) (:error nil)
+                      d! $ :: :data $ {} (:data data) (:error nil)
                     fn (err)
-                      d! :data $ {} (:data nil)
+                      d! $ :: :data $ {} (:data nil)
                         :error $ .-message err
               div
                 {} $ :class-name $ str-spaced css/flex css/column
@@ -128,7 +128,7 @@
               :class-name $ str-spaced css/textarea css/flex css/font-code!
               :style $ {} (:font-size 12) (:word-break :break-all) (:border :none)
               :on-input $ fn (e d!)
-                d! :text $ option:unwrap-or (get e :value) |
+                d! $ :: :text $ option:unwrap-or (get e :value) |
               :on-keydown $ fn (e d!)
                 let
                     event $ unsafe-coerce
@@ -165,7 +165,8 @@
                             :return 'Dynamic
                           when
                             not $ blank? text
-                            d! :pick $ parse-cirru-edn $ str "|[] " (trim text)
+                            d! $ :: :pick $ parse-cirru-edn
+                              str "|[] " $ trim text
                     a $ {} (:inner-text |Drop) (:class-name css/link)
                       :on-click $ fn (e d!)
                         .show picker-plugin d! $ fn (text)
@@ -174,9 +175,11 @@
                             :return 'Dynamic
                           when
                             not $ blank? text
-                            d! :drop $ parse-cirru-edn $ str "|[] " (trim text)
+                            d! $ :: :drop $ parse-cirru-edn
+                              str "|[] " $ trim text
                     a $ {} (:inner-text "|Tidy list") (:class-name css/link)
-                      :on-click $ fn (e d!) (d! :tidy nil)
+                      :on-click $ fn (e d!)
+                        d! $ :: :tidy
                   div
                     {} (:class-name css/row-middle)
                       :style $ {} (:padding 8) (:justify-content :flex-start)
@@ -204,7 +207,8 @@
               {} (:class-name css-type-label)
                 :style $ {} $ :color
                   if (= current-type k) (hsl 200 80 50) (hsl 200 70 80)
-                :on-click $ fn (e d!) (d! :display-type k)
+                :on-click $ fn (e d!)
+                  d! $ :: :display-type k
               <> label
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'respo.schema/Component)
@@ -232,10 +236,10 @@
         'display-data $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn display-data (data type)
             hint-fn $ {}
-              :args $ [] 'Dynamic 'Dynamic
+              :args $ [] 'Dynamic schema/DisplayType
               :return 'String
               :features $ #{} :js-ffi
-            case-default type (str "|Unknown type: " type)
+            case-default (&enum:nth type 0) (str "|Unknown type: " type)
               :edn $ jsedn/encode $ to-js-data data
               :json $ js/JSON.stringify (to-js-data data) nil 2
               :json5 $ stringify-json5 data
@@ -311,15 +315,15 @@
             favored-edn.core :refer $ write-edn
             |copy-text-to-clipboard :default copy!
             app.config :as config
-            |cson-parser/lib/stringify :default cson-stringify
             respo-alerts.core :refer $ use-prompt
-            |jsedn/jsedn :as jsedn
             respo.css :refer $ defstyle
             respo-ui.css :as css
             |json5 :default JSON5
             |fracturedjsonjs :refer $ Formatter
             cljs.reader :refer $ read-string
             app.schema :as schema
+            |cson-parser/lib/stringify.js :default cson-stringify
+            |../jsedn-adapter.mjs :as jsedn
     'app.config $ %{} 'FileEntry
       :defs $ {}
         'dev? $ %{} 'CodeEntry (:doc |)
@@ -466,9 +470,10 @@
           :code $ quote $ defn pick-from (data xs)
             if (empty? xs) data $ cond
                 map? data
-                get-in data xs
+                option:unwrap-or (get-in data xs) nil
               (list? data)
-                map data $ fn (child) (get-in child xs)
+                map data $ fn (child)
+                  option:unwrap-or (get-in child xs) nil
               true data
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Dynamic)

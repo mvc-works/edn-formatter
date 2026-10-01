@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: frontend-${{ github.repository }}-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || github.ref }}
+  cancel-in-progress: false
+
 jobs:
   test:
     runs-on: ubuntu-24.04
@@ -25,7 +29,7 @@ jobs:
     - name: Enable Corepack and Yarn Berry
       run: |
         corepack enable
-        corepack prepare yarn@4.12.0 --activate
+        corepack prepare yarn@4.18.0 --activate
         yarn --version
 
     - uses: calcit-lang/setup-calcit@ca701be5a471759e442aa053cd100720bbe1f09f # v1.5.0
@@ -37,16 +41,21 @@ jobs:
     - name: Install deps
       run: |
         set -euo pipefail
-        caps --ci
+        test ! -e compact.cirru
+        test ! -e package.cirru
+        caps --strict --ci
         yarn install --immutable
         caps verify --toolchain
 
     - name: Validate Calcit snapshot and types
       run: |
+        set -euo pipefail
         calcit calcit.cirru edit format
         git diff --exit-code -- calcit.cirru
         # hard gate: preprocessing must be warning-free
         calcit calcit.cirru --check-only
+        calcit calcit.cirru fix --workflow strict --verify
+        calcit calcit.cirru analyze check-public --ns app.comp.container --ns app.config --ns app.main --ns app.schema --ns app.updater --summary-only
         calcit calcit.cirru analyze dynamic-methods
         mkdir -p .calcit/upgrade
         calcit calcit.cirru analyze check-types --summary-only --format json > .calcit/upgrade/check-types.json
@@ -58,9 +67,10 @@ jobs:
       id: asset-path
       env:
         CDN_ORIGIN: https://cos-sh.tiye.me
+        PR_NUMBER: ${{ github.event.pull_request.number }}
       run: |
         if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
-          asset_prefix="${GITHUB_REPOSITORY}/pr/"
+          asset_prefix="${GITHUB_REPOSITORY}/pr/${PR_NUMBER}/"
         else
           asset_prefix="${GITHUB_REPOSITORY}/"
         fi
@@ -73,6 +83,7 @@ jobs:
       run: |
         set -euo pipefail
         calcit calcit.cirru js
+        node --test scripts/formatter-regression.test.mjs
         yarn vite build --base="$VITE_BASE_URL"
 
     - name: Check COS credentials
@@ -110,7 +121,7 @@ jobs:
     - name: Preserve existing web entry deployment
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       id: deploy
-      uses: Pendect/action-rsyncer@v2.0.0
+      uses: Pendect/action-rsyncer@8e05ffa5c93e5d9c9b167796b26044d2c616b2b9 # v2.0.0
       env:
         DEPLOY_KEY: ${{secrets.rsync_private_key}}
       with:

@@ -14,6 +14,20 @@ action verifies uploaded files through the public URL before deployment passes.
 
 ### Workflow
 
+Requires Calcit 0.27.0, Caps 0.1.1, Node.js 24 and Yarn 4.18.0.
+Only `calcit.cirru` and `deps.cirru` are canonical; do not restore the retired
+`compact.cirru` or `package.cirru` files.
+
+```sh
+caps --strict --ci
+yarn install --immutable
+caps verify --toolchain
+calcit --check-only
+calcit js
+node --test scripts/formatter-regression.test.mjs
+yarn vite build
+```
+
 Workflow https://github.com/mvc-works/coworkflow
 
 ### License

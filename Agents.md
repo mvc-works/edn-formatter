@@ -23,7 +23,7 @@ Use the current Calcit and Yarn Berry toolchain:
 ```bash
 calcit --version
 corepack enable
-corepack prepare yarn@4.12.0 --activate
+corepack prepare yarn@4.18.0 --activate
 yarn --version
 ```
 
@@ -32,7 +32,7 @@ Common development commands:
 ```bash
 calcit calcit.cirru js
 yarn vite
-yarn vite build --base=https://cos-sh.tiye.me/mvc-works/edn-formatter/pr/
+yarn vite build --base=https://cos-sh.tiye.me/mvc-works/edn-formatter/pr/67/
 ```
 
 Dependency update flow:
@@ -51,7 +51,7 @@ When changing the project, prefer this validation order:
 yarn install --immutable
 calcit calcit.cirru --check-only
 calcit calcit.cirru js
-yarn vite build --base=https://cos-sh.tiye.me/mvc-works/edn-formatter/pr/
+yarn vite build --base=https://cos-sh.tiye.me/mvc-works/edn-formatter/pr/67/
 ```
 
 CI currently uses the same chain in `.github/workflows/upload.yaml`.
