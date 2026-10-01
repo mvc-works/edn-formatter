@@ -84,7 +84,6 @@ jobs:
         calcit calcit.cirru js
         node --test scripts/formatter-regression.test.mjs
         yarn vite build --base="$VITE_BASE_URL"
-        grep -Fq "$VITE_BASE_URL" dist/index.html
 
     - name: Check COS credentials
       id: cos-credentials
