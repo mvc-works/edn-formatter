@@ -23,7 +23,7 @@ Use the current Calcit and Yarn Berry toolchain:
 ```bash
 calcit --version
 corepack enable
-corepack prepare yarn@4.12.0 --activate
+corepack prepare yarn@4.18.0 --activate
 yarn --version
 ```
 
