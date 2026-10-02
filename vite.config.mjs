@@ -5,6 +5,7 @@ const require = createRequire(import.meta.url);
 const requireFromJsedn = createRequire(require.resolve('jsedn'));
 
 export default defineConfig({
+  base: process.env.VITE_BASE_URL ?? './',
   resolve: {
     // jsedn's old Component resolver uses "type" as an alias for this
     // dependency. Resolve that branch to the real installed module.

@@ -30,9 +30,9 @@ yarn --version
 Common development commands:
 
 ```bash
-calcit calcit.cirru js
-yarn vite
-yarn vite build --base=https://cos-sh.tiye.me/mvc-works/edn-formatter/pr/67/
+yarn dev
+calcit calcit.cirru --watch
+yarn build
 ```
 
 Dependency update flow:
@@ -50,11 +50,11 @@ When changing the project, prefer this validation order:
 ```bash
 yarn install --immutable
 calcit calcit.cirru --check-only
-calcit calcit.cirru js
-yarn vite build --base=https://cos-sh.tiye.me/mvc-works/edn-formatter/pr/67/
+yarn build
+node --test scripts/formatter-regression.test.mjs
 ```
 
-CI currently uses the same chain in `.github/workflows/upload.yaml`.
+The Snapshot defaults to JavaScript. CI additionally checks the existing type-debt baseline in `.github/workflows/upload.yaml` and sets `VITE_BASE_URL` to an isolated PR/run/attempt CDN path. COS upload verification is provided by the action itself.
 
 ## Editing guidance
 
