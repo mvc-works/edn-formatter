@@ -66,7 +66,7 @@ The Snapshot defaults to JavaScript. CI additionally checks the existing type-de
 
 ## Project-specific notes
 
-- `app.comp.container/on-keydown` uses `read-string`, imported from `cljs.reader`.
+- `app.comp.container/comp-input-area` validates the native keyboard host and calls the parser on Command-Enter. `try` handlers receive an error message String, not a JS Error object.
 - This project uses Yarn Berry with `nodeLinker: node-modules`.
 - Keep `deps.cirru` `:calcit-version` aligned with `package.json` `@calcit/procs`.
 - CI uploads only frontend `dist/` assets to COS and verifies the public CDN URLs. The existing rsync web-entry path remains unchanged.

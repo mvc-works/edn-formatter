@@ -12,30 +12,21 @@
       :defs $ {}
         'FracturedFormatterHost $ %{} 'CodeEntry (:doc |)
           :code $ quote $ deftrait FracturedFormatterHost
-            .serialize $ :: Fn $ {}
-              :args $ [] FracturedFormatterHost Dynamic
-              :return FracturedSerializedHost
+            .serialize $ :: 'Fn $ {}
+              :args $ [] 'FracturedFormatterHost 'Dynamic
+              :return $ :: 'JsNullish 'JsObject
           :examples $ []
           :ffi $ {} (:backend :js) (:kind :external-object) (:target :browser)
             :names $ {} $ :serialize |Serialize
           :schema $ :: 'Trait
-        'FracturedSerializedHost $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ deftrait FracturedSerializedHost
-            .to-string $ :: Fn $ {}
-              :args $ [] FracturedSerializedHost
-              :return String
-          :examples $ []
-          :ffi $ {} (:backend :js) (:kind :external-object) (:target :browser)
-            :names $ {} $ :to-string |toString
-          :schema $ :: 'Trait
         'Json5Host $ %{} 'CodeEntry (:doc |)
           :code $ quote $ deftrait Json5Host
-            .parse $ :: Fn $ {}
-              :args $ [] Json5Host String
-              :return Dynamic
-            .stringify $ :: Fn $ {}
-              :args $ [] Json5Host Dynamic Dynamic Number
-              :return String
+            .parse $ :: 'Fn $ {}
+              :args $ [] 'Json5Host 'String
+              :return 'Dynamic
+            .stringify $ :: 'Fn $ {}
+              :args $ [] 'Json5Host 'Dynamic 'Dynamic 'Number
+              :return $ :: 'JsNullish 'JsObject
           :examples $ []
           :ffi $ {} (:backend :js) (:kind :external-object) (:target :browser)
             :names $ {} (:parse |parse) (:stringify |stringify)
@@ -43,9 +34,7 @@
         'comp-container $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-container (reel)
             let
-                store $ unsafe-coerce
-                  option:unwrap $ get reel :store
-                  , 'app.schema/Store
+                store $ :store reel
                 states $ :states store
               div
                 {}
@@ -55,11 +44,10 @@
                 =< 2 nil
                 comp-previewer (>> states :previewer) store
                 when config/dev? $ comp-inspect |state store $ {} (:bottom 8)
-                when config/dev? $ comp-reel (>> states :reel) reel $ {}
+                when config/dev? $ comp-typed-reel (>> states :reel) reel $ {}
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'respo.schema/Component)
-            :args $ [] $ :: 'Map 'Tag 'Dynamic
-            :features $ #{} :js-ffi
+            :args $ [] $ :: 'reel.typed/State 'Enum 'app.schema/Store
         'comp-drafter $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-drafter (states store)
             let
@@ -69,8 +57,7 @@
                         data $ f
                       d! $ :: :data $ {} (:data data) (:error nil)
                     fn (err)
-                      d! $ :: :data $ {} (:data nil)
-                        :error $ .-message err
+                      d! $ :: :data $ {} (:data nil) (:error err)
               div
                 {} $ :class-name $ str-spaced css/flex css/column
                 div
@@ -115,9 +102,13 @@
                           , d!
                 comp-input-area (:text store)
                   fn (content d!)
+                    hint-fn $ {}
+                      :args $ [] 'String 'Fn
+                      :return 'Unit
                     handle-result
                       fn () $ keywordize-data $ to-calcit-data (parse-json5 content)
                       , d!
+                    , &unit
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'respo.schema/Component)
             :args $ [] 'Dynamic 'app.schema/Store
@@ -128,20 +119,22 @@
               :class-name $ str-spaced css/textarea css/flex css/font-code!
               :style $ {} (:font-size 12) (:word-break :break-all) (:border :none)
               :on-input $ fn (e d!)
-                d! $ :: :text $ option:unwrap-or (get e :value) |
+                d! $ :: :text $ .unwrap-or (get e :value) |
               :on-keydown $ fn (e d!)
                 let
-                    event $ unsafe-coerce
-                      option:unwrap $ get e :event
-                      , js-ffi.browser/KeyboardEventHost
+                    event $ js-cast
+                      .unwrap $ get e :event
+                      , 'js-ffi.browser/KeyboardEventHost
                   if
                     and (.-meta-key? event)
                       = |Enter $ .-key event
-                    on-parse text d!
+                    if (fn? d!) (on-parse text d!) (raise "|Expected a dispatch function")
                     , &unit
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'respo.schema/Component)
-            :args $ [] 'String 'Fn
+            :args $ [] 'String $ :: 'Fn
+              {} (:return 'Unit)
+                :args $ [] 'String 'Fn
             :features $ #{} :js-ffi
         'comp-previewer $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-previewer (states store)
@@ -162,21 +155,23 @@
                         .show picker-plugin d! $ fn (text)
                           hint-fn $ {}
                             :args $ [] 'String
-                            :return 'Dynamic
+                            :return 'Unit
                           when
                             not $ blank? text
                             d! $ :: :pick $ parse-cirru-edn
                               str "|[] " $ trim text
+                          , &unit
                     a $ {} (:inner-text |Drop) (:class-name css/link)
                       :on-click $ fn (e d!)
                         .show picker-plugin d! $ fn (text)
                           hint-fn $ {}
                             :args $ [] 'String
-                            :return 'Dynamic
+                            :return 'Unit
                           when
                             not $ blank? text
                             d! $ :: :drop $ parse-cirru-edn
                               str "|[] " $ trim text
+                          , &unit
                     a $ {} (:inner-text "|Tidy list") (:class-name css/link)
                       :on-click $ fn (e d!)
                         d! $ :: :tidy
@@ -186,10 +181,10 @@
                     comp-type-selector $ :display-type store
                 let
                     e $ :error store
-                  if (option:some? e)
+                  if (.some? e)
                     div
                       {} $ :style $ {} (:padding "|0 8px")
-                      <> (option:unwrap e)
+                      <> (.unwrap e)
                         {} (:color :red) (:margin-right 8)
                     textarea $ {}
                       :value $ display-data (:data store) (:display-type store)
@@ -235,32 +230,32 @@
           :schema $ :: 'String
         'display-data $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn display-data (data type)
-            hint-fn $ {}
-              :args $ [] 'Dynamic schema/DisplayType
-              :return 'String
-              :features $ #{} :js-ffi
-            case-default (&enum:nth type 0) (str "|Unknown type: " type)
-              :edn $ jsedn/encode $ to-js-data data
-              :json $ js/JSON.stringify (to-js-data data) nil 2
-              :json5 $ stringify-json5 data
-              :cirru-edn $ format-cirru-edn data
-              :cson $ cson-stringify (to-js-data data) nil 2
-              :f-json $ stringify-fractured-json data
+            match type
+              (:edn)
+                expect-string |formatter-output $ jsedn/encode $ to-js-data data
+              (:json)
+                expect-string |formatter-output $ js/JSON.stringify (to-js-data data) nil 2
+              (:json5) (stringify-json5 data)
+              (:cirru-edn) (format-cirru-edn data)
+              (:cson)
+                expect-string |formatter-output $ cson-stringify (to-js-data data) nil 2
+              (:f-json) (stringify-fractured-json data)
+              _ $ str "|Unknown type: " type
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'String)
-            :args $ [] 'Dynamic 'Dynamic
+            :args $ [] 'Dynamic 'app.schema/DisplayType
             :features $ #{} :js-ffi
         'keywordize-data $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn keywordize-data (xs)
             cond
                 map? xs
                 filter-map-kv
-                  unsafe-coerce xs $ :: 'Map 'Any 'Any
+                  decode-map-as xs $ :: 'Map 'Dynamic 'Dynamic
                   fn (k v)
                     hint-fn $ {}
-                      :args $ [] 'Any 'Any
-                      :return $ :: 'MapEntryDecision 'Any 'Dynamic
-                    %:: MapEntryDecision :keep k $ keywordize-data v
+                      :args $ [] 'Dynamic 'Dynamic
+                      :return $ :: 'MapEntryDecision 'Dynamic 'Dynamic
+                    MapEntryDecision :keep k $ keywordize-data v
               (list? xs) (map xs keywordize-data)
               true xs
           :examples $ []
@@ -270,7 +265,7 @@
         'parse-json5 $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn parse-json5 (content)
             let
-                parser $ unsafe-coerce JSON5 Json5Host
+                parser $ js-cast JSON5 'app.comp.container/Json5Host
               .parse parser content
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Dynamic)
@@ -279,23 +274,21 @@
         'stringify-fractured-json $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn stringify-fractured-json (data)
             let
-                formatter $ unsafe-coerce (new Formatter) FracturedFormatterHost
-                serialized $ unsafe-coerce
-                  .serialize formatter $ to-js-data data
-                  , FracturedSerializedHost
-              .to-string serialized
+                formatter $ js-cast (new Formatter) 'app.comp.container/FracturedFormatterHost
+                serialized $ .serialize formatter $ to-js-data data
+              expect-string |formatter-output serialized
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'String)
-            :args $ [] 'Any
+            :args $ [] 'Dynamic
             :features $ #{} :js-ffi
         'stringify-json5 $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn stringify-json5 (data)
             let
-                parser $ unsafe-coerce JSON5 Json5Host
-              .stringify parser (to-js-data data) nil 2
+                parser $ js-cast JSON5 'app.comp.container/Json5Host
+              expect-string |formatter-output $ .stringify parser (to-js-data data) nil 2
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'String)
-            :args $ [] 'Any
+            :args $ [] 'Dynamic
             :features $ #{} :js-ffi
         'style-button $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def style-button
@@ -310,9 +303,7 @@
             respo.core :refer $ defcomp >> list-> <> div button span textarea pre a defeffect
             respo.comp.space :refer $ =<
             respo.comp.inspect :refer $ comp-inspect
-            reel.comp.reel :refer $ comp-reel
-            fipp.edn :refer $ pprint
-            favored-edn.core :refer $ write-edn
+            reel.comp.reel :refer $ comp-typed-reel
             |copy-text-to-clipboard :default copy!
             app.config :as config
             respo-alerts.core :refer $ use-prompt
@@ -320,15 +311,15 @@
             respo-ui.css :as css
             |json5 :default JSON5
             |fracturedjsonjs :refer $ Formatter
-            cljs.reader :refer $ read-string
             app.schema :as schema
             |cson-parser/lib/stringify.js :default cson-stringify
             |../jsedn-adapter.mjs :as jsedn
+            js-ffi.contract :refer $ expect-string
     'app.config $ %{} 'FileEntry
       :defs $ {}
         'dev? $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def dev?
-            = |dev $ option:unwrap-or (get-env |mode) |release
+            = |dev $ .unwrap-or (get-env |mode) |release
           :examples $ []
           :schema $ :: 'Bool
         'site $ %{} 'CodeEntry (:doc |)
@@ -341,14 +332,22 @@
     'app.main $ %{} 'FileEntry
       :defs $ {}
         '*reel $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defatom *reel
-            -> reel-schema/reel (assoc :base schema/store) (assoc :store schema/store)
+          :code $ quote $ defref *reel (typed/new-reel schema/store)
           :examples $ []
-          :schema $ :: 'Ref $ :: 'Map 'Tag 'Dynamic
+          :schema $ :: 'Ref $ :: 'reel.typed/State 'Enum 'app.schema/Store
         'dispatch! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn dispatch! (op)
-            when config/dev? $ println |Dispatch: op
-            reset! *reel $ reel-updater updater @*reel op
+            if (enum? op)
+              do
+                when config/dev? $ println |Dispatch: op
+                match (typed/decode-control op)
+                  (:some control)
+                    reset! *reel $ typed/apply-control updater @*reel control
+                  (:none)
+                    reset! *reel $ typed/record-op updater @*reel op (generate-id!)
+                      :timestamp $ shared/date-now-snapshot
+                , &unit
+              raise "|Expected an operation enum"
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Unit)
             :args $ [] 'Dynamic
@@ -358,7 +357,7 @@
               do (load-console-formatter!) |dev
               , |release
             render-app!
-            add-watch *reel :changes $ fn (r p) (render-app!)
+            add-watch! *reel :changes $ fn (r p) (render-app!)
             listen-devtools! |a dispatch!
             set-before-unload! $ fn (event) (persist-storage!)
             ; repeat! 60 persist-storage!
@@ -367,12 +366,9 @@
               when (some? raw)
                 dispatch! :hydrate-storage $ parse-cirru-edn raw
             let
-                w $ unsafe-coerce js/window js/JsObject
-                store $ unsafe-coerce
-                  option:unwrap $ get @*reel :store
-                  , 'app.schema/Store
-              set! (.-showData w)
-                fn () $ js/console.info $ :data store
+                w $ expect-object |window js/window
+                store $ :store @*reel
+              js/Reflect.set w |showData $ fn () $ js/console.info (:data store)
             js/console.warn "|injected window.showData showing data as js object."
             println "|App started."
           :examples $ []
@@ -381,17 +377,15 @@
             :features $ #{} :js-ffi
         'mount-target $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def mount-target
-            option:unwrap $ query-selector |.app
+            narrow-element $ .unwrap $ query-selector |.app
           :examples $ []
-          :schema $ :: 'js-ffi.browser/DomElementHost
+          :schema $ :: 'respo.dom/DomElement
         'persist-storage! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn persist-storage! ()
             let
-                store $ unsafe-coerce
-                  option:unwrap $ get @*reel :store
-                  , 'app.schema/Store
+                store $ :store @*reel
               storage-set!
-                option:unwrap-or (get config/site :storage-key) |
+                .unwrap-or (get config/site :storage-key) |
                 format-cirru-edn store
               , &unit
           :examples $ []
@@ -401,11 +395,12 @@
         'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn reload! ()
             if (nil? build-errors)
-              do (remove-watch *reel :changes) (clear-cache!)
-                add-watch *reel :changes $ fn (reel prev) (render-app!)
-                reset! *reel $ assert-type (refresh-reel @*reel schema/store updater) (:: 'Map 'Tag 'Dynamic)
+              do (remove-watch! *reel :changes) (clear-cache!)
+                add-watch! *reel :changes $ fn (reel prev) (render-app!)
+                reset! *reel $ typed/refresh updater @*reel schema/store
                 hud! |ok~ |Ok
               hud! |error build-errors
+            , &unit
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Unit)
             :args $ []
@@ -422,15 +417,15 @@
             app.comp.container :refer $ comp-container
             app.updater :refer $ updater
             app.schema :as schema
-            reel.util :refer $ listen-devtools!
-            reel.core :refer $ reel-updater refresh-reel
-            reel.schema :as reel-schema
-            cljs.reader :refer $ read-string
+            reel.util :refer $ listen-devtools! generate-id!
             app.config :as config
-            cumulo-util.core :refer $ repeat!
             |./calcit.build-errors :default build-errors
             |bottom-tip :default hud!
-            js-ffi.browser :refer $ [] query-selector set-before-unload! storage-set!
+            js-ffi.browser :refer $ query-selector set-before-unload! storage-set!
+            reel.typed :as typed
+            js-ffi.shared :as shared
+            respo.ffi.browser :refer $ narrow-element
+            js-ffi.contract :refer $ expect-object
     'app.schema $ %{} 'FileEntry
       :defs $ {}
         'DisplayType $ %{} 'CodeEntry (:doc |)
@@ -439,7 +434,7 @@
           :schema $ :: 'EnumDef
         'Store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstruct Store
-            :states $ :: 'Map 'Any
+            :states $ :: 'Map 'Dynamic 'Dynamic
             :text 'String
             :data 'Dynamic
             :error $ :: 'Option 'String
@@ -465,38 +460,53 @@
               true data
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Dynamic)
-            :args $ [] 'Dynamic $ :: 'List 'Any
+            :args $ [] 'Dynamic $ :: 'List 'Dynamic
         'pick-from $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn pick-from (data xs)
             if (empty? xs) data $ cond
                 map? data
-                option:unwrap-or (get-in data xs) nil
+                .unwrap-or (get-in data xs) nil
               (list? data)
                 map data $ fn (child)
-                  option:unwrap-or (get-in child xs) nil
+                  .unwrap-or (get-in child xs) nil
               true data
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Dynamic)
-            :args $ [] 'Dynamic $ :: 'List 'Any
+            :args $ [] 'Dynamic $ :: 'List 'Dynamic
         'updater $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn updater (store op op-id op-time) (assert-type store 'app.schema/Store)
+          :code $ quote $ defn updater (store op op-id op-time)
             match op
               (:states cursor s)
-                assoc store :states $ update-state-tree (:states store) cursor s
-              (:hydrate-storage d) d
-              (:text t) (assoc store :text t)
-              (:display-type t) (assoc store :display-type t)
+                assoc store :states $ decode-map-as
+                  update-state-tree (:states store)
+                    decode-map-as cursor $ :: 'List 'Dynamic
+                    , s
+                  :: 'Map 'Dynamic 'Dynamic
+              (:hydrate-storage d)
+                if (struct? d)
+                  struct-match d
+                    schema/Store checked $ decode-map-as (.to-map checked) 'app.schema/Store
+                    _ other $ raise "|Expected a Store struct"
+                  decode-map-as d 'app.schema/Store
+              (:text t)
+                assoc store :text $ decode-map-as t 'String
+              (:display-type t)
+                assoc store :display-type $ decode-map-as t 'app.schema/DisplayType
               (:pick d)
-                update store :data $ fn (data) (pick-from data d)
+                update store :data $ fn (data)
+                  pick-from data $ decode-map-as d $ :: 'List 'Dynamic
               (:drop d)
-                update store :data $ fn (data) (drop-from data d)
+                update store :data $ fn (data)
+                  drop-from data $ decode-map-as d $ :: 'List 'Dynamic
               (:data d)
-                struct-with store
-                  :data $ option:unwrap-or (get d :data) nil
-                  :error $ if
-                    nil? $ option:unwrap-or (get d :error) nil
-                    Option :none
-                    Option :some $ str $ option:unwrap-or (get d :error) |
+                let
+                    result $ decode-map-as d $ :: 'Map 'Tag 'Dynamic
+                  struct-with store
+                    :data $ .unwrap-or (get result :data) nil
+                    :error $ if
+                      nil? $ .unwrap-or (get result :error) nil
+                      Option :none
+                      Option :some $ str $ .unwrap-or (get result :error) |
               (:tidy)
                 update store :data $ fn (data)
                   if (list? data)
@@ -505,7 +515,7 @@
               _ $ do (eprintln "|Unknown op:" op) store
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'app.schema/Store)
-            :args $ [] 'app.schema/Store 'Dynamic 'String 'Number
+            :args $ [] 'app.schema/Store 'Enum 'String 'Number
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.updater
           :require
