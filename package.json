@@ -20,7 +20,7 @@
     "vite": "8.3.1"
   },
   "dependencies": {
-    "@calcit/procs": "0.27.0",
+    "@calcit/procs": "0.30.1-alpha.4",
     "coffeescript": "^2.7.0",
     "copy-text-to-clipboard": "^3.2.2",
     "cson": "^8.4.0",

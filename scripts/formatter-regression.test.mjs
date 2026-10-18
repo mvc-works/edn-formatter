@@ -4,11 +4,11 @@ import * as c from '../js-out/calcit.core.mjs';
 import { comp_drafter, comp_input_area, comp_type_label, comp_previewer, display_data } from '../js-out/app.comp.container.mjs';
 import { DisplayType, store } from '../js-out/app.schema.mjs';
 import { updater } from '../js-out/app.updater.mjs';
-import { component_$q_, component_tree } from '../js-out/respo.util.detect.mjs';
+import { component_$q_, component_tree, render_node_value } from '../js-out/respo.util.detect.mjs';
 import { make_string } from '../js-out/respo.render.html.mjs';
 import { parse, toJS } from '../jsedn-adapter.mjs';
 
-const t = c.init_tags(['event', 'children', 'click', 'input', 'some', 'none', 'value', 'text', 'data', 'error', 'display-type', 'tidy', 'pick', 'drop', 'states', 'a', 'b', 'json', 'cirru-edn', 'json5', 'f-json', 'cson', 'edn']);
+const t = c.init_tags(['event', 'children', 'node', 'click', 'input', 'some', 'none', 'value', 'text', 'data', 'error', 'display-type', 'tidy', 'pick', 'drop', 'states', 'a', 'b', 'json', 'cirru-edn', 'json5', 'f-json', 'cson', 'edn']);
 const map = c._$n__$M_;
 const field = (v, k) => c.option_$o_unwrap(c.get(v, k));
 const nth = (v, i) => c.option_$o_unwrap(c.nth(v, i));
@@ -26,7 +26,9 @@ function handler(node, kind, label = '') {
   if (en(children, 0) === t.some) {
     const pairs = c.option_$o_unwrap(children);
     for (let i = 0; i < c.count(pairs); i++) {
-      const found = handler(nth(nth(pairs, i), 1), kind, label);
+      const child = field(nth(pairs, i), t.node);
+      if (en(child, 0) === t.none) continue;
+      const found = handler(render_node_value(c.option_$o_unwrap(child)), kind, label);
       if (found) return found;
     }
   }
