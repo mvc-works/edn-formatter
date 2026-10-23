@@ -16,8 +16,8 @@ production, without cancellation; original server deployment paths are unchanged
 
 ### 0.30.1 迁移：用户需要注意
 
-候选配对 Calcit/procs `0.30.1-alpha.4`（预发布版），依赖使用正式 Alerts `0.10.55`、
-Reel `0.6.39`、UI `0.7.41`、Respo `0.16.122`。升级后请完整刷新，不跨热重载保留旧
+配对正式 Calcit/procs `0.30.1`，依赖使用正式 Alerts `0.10.57`、
+Reel `0.6.41`、UI `0.8.0`、Respo `0.16.124`。升级后请完整刷新，不跨热重载保留旧
 Map Reel。现有解析/六种格式输出、Pick/Drop/Tidy 和匿名 Enum 操作协议保留。
 持久化 key 和格式不变，原来注释掉的自动恢复逻辑仍未启用，不静默开启额外数据读取。
 手动调用 `:hydrate-storage` 时会递归校验字段；从存档解析 Store 必须提供 Store、
@@ -41,7 +41,7 @@ nil 16→13；完整 strict 作为本地迁移验收通过，不恢复为日常 
 
 ### Workflow
 
-Requires Calcit 0.30.1-alpha.4, Caps 0.1.1, Node.js 24 and Yarn 4.18.0.
+Requires formal Calcit 0.30.1, Caps 0.1.1, Node.js 24 and Yarn 4.18.0.
 Only `calcit.cirru` and `deps.cirru` are canonical; do not restore the retired
 `compact.cirru` or `package.cirru` files.
 
