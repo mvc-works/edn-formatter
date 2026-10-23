@@ -84,10 +84,11 @@ test('Tidy event sorts and deduplicates a list with a payload-free Enum', () => 
   assert.deepEqual(c.to_js_data(field(updater(initial, op, 'tidy', 1), t.data)), [1, 2, 3]);
 });
 test('Pick follows a path and Drop removes that path', () => {
-  const initial = withField(store, t.data, map(t.a, 1, t.b, 2));
+  const initial = withField(withField(store, t.data, map(t.a, 1, t.b, 2)), t.error, c.get(map(t.error, 'previous path error'), t.error));
   for (const tag of [t.pick, t.drop]) {
     const next = updater(initial, c._$o__$o_(tag, c._$L_(t.a)), 'keys', 1);
     assert.deepEqual(c.to_js_data(field(next, t.data)), tag === t.pick ? 1 : { b: 2 });
+    assert.equal(en(field(next, t.error), 0), t.none);
   }
 });
 test('Pick unwraps Option for list entries and preserves missing paths as nil', () => {

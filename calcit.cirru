@@ -156,10 +156,15 @@
                           hint-fn $ {}
                             :args $ [] 'String
                             :return 'Unit
-                          when
-                            not $ blank? text
-                            d! $ :: :pick $ parse-cirru-edn
-                              str "|[] " $ trim text
+                          try
+                            when
+                              not $ blank? text
+                              d! $ :: :pick $ parse-cirru-edn
+                                str "|[] " $ trim text
+                            fn (message)
+                              d! $ :: :data $ {}
+                                :data $ :data store
+                                :error message
                           , &unit
                     a $ {} (:inner-text |Drop) (:class-name css/link)
                       :on-click $ fn (e d!)
@@ -167,10 +172,15 @@
                           hint-fn $ {}
                             :args $ [] 'String
                             :return 'Unit
-                          when
-                            not $ blank? text
-                            d! $ :: :drop $ parse-cirru-edn
-                              str "|[] " $ trim text
+                          try
+                            when
+                              not $ blank? text
+                              d! $ :: :drop $ parse-cirru-edn
+                                str "|[] " $ trim text
+                            fn (message)
+                              d! $ :: :data $ {}
+                                :data $ :data store
+                                :error message
                           , &unit
                     a $ {} (:inner-text "|Tidy list") (:class-name css/link)
                       :on-click $ fn (e d!)
@@ -493,11 +503,15 @@
               (:display-type t)
                 assoc store :display-type $ decode-map-as t 'app.schema/DisplayType
               (:pick d)
-                update store :data $ fn (data)
-                  pick-from data $ decode-map-as d $ :: 'List 'Dynamic
+                assoc
+                  update store :data $ fn (data)
+                    pick-from data $ decode-map-as d $ :: 'List 'Dynamic
+                  , :error $ Option :none
               (:drop d)
-                update store :data $ fn (data)
-                  drop-from data $ decode-map-as d $ :: 'List 'Dynamic
+                assoc
+                  update store :data $ fn (data)
+                    drop-from data $ decode-map-as d $ :: 'List 'Dynamic
+                  , :error $ Option :none
               (:data d)
                 let
                     result $ decode-map-as d $ :: 'Map 'Tag 'Dynamic

@@ -35,7 +35,7 @@ jobs:
 
     - uses: calcit-lang/setup-calcit@v1.5.0
       with:
-        version: "0.30.1-alpha.4"
+        deps-file: deps.cirru
         tools: calcit,caps
         caps-version: "0.1.1"
 
@@ -87,6 +87,15 @@ jobs:
         set -euo pipefail
         yarn build
         node --test scripts/formatter-regression.test.mjs
+
+    - name: Retain tested preview
+      if: github.event_name == 'pull_request'
+      uses: actions/upload-artifact@v7.0.0
+      with:
+        name: formatter-preview
+        path: dist/
+        retention-days: 7
+        if-no-files-found: error
 
     - name: Check COS credentials
       id: cos-credentials
