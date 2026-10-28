@@ -6,7 +6,7 @@
     {} (:description |) (:init-fn 'app.main/main!) (:mode :js) (:reload-fn 'app.main/reload!) (:target :browser)
       :feature-policy $ {}
       :modules $ [] |respo.calcit/ |respo-ui.calcit/ |reel.calcit/ |alerts.calcit/
-      :type-slots $ {}
+      :type-slots $ {} $ :dispatch-op |app.schema/DispatchOp
   :files $ {}
     'app.comp.container $ %{} 'FileEntry
       :defs $ {}
@@ -152,6 +152,10 @@
                         copy! $ display-data (:data store) (:display-type store)
                     a $ {} (:inner-text |Pick) (:class-name css/link)
                       :on-click $ fn (e d!)
+                        hint-fn $ {} (:return 'Unit)
+                          :args $ [] (:: 'Map 'Tag 'Dynamic)
+                            :: 'Fn $ {} (:return 'Unit)
+                              :args $ [] 'Enum
                         .show picker-plugin d! $ fn (text)
                           hint-fn $ {}
                             :args $ [] 'String
@@ -166,8 +170,13 @@
                                 :data $ :data store
                                 :error message
                           , &unit
+                        , &unit
                     a $ {} (:inner-text |Drop) (:class-name css/link)
                       :on-click $ fn (e d!)
+                        hint-fn $ {} (:return 'Unit)
+                          :args $ [] (:: 'Map 'Tag 'Dynamic)
+                            :: 'Fn $ {} (:return 'Unit)
+                              :args $ [] 'Enum
                         .show picker-plugin d! $ fn (text)
                           hint-fn $ {}
                             :args $ [] 'String
@@ -182,6 +191,7 @@
                                 :data $ :data store
                                 :error message
                           , &unit
+                        , &unit
                     a $ {} (:inner-text "|Tidy list") (:class-name css/link)
                       :on-click $ fn (e d!)
                         d! $ :: :tidy
@@ -427,7 +437,6 @@
             app.comp.container :refer $ comp-container
             app.updater :refer $ updater
             app.schema :as schema
-            reel.util :refer $ listen-devtools! generate-id!
             app.config :as config
             |./calcit.build-errors :default build-errors
             |bottom-tip :default hud!
@@ -436,8 +445,14 @@
             js-ffi.shared :as shared
             respo.ffi.browser :refer $ narrow-element
             js-ffi.contract :refer $ expect-object
+            reel.util :refer $ listen-devtools!
     'app.schema $ %{} 'FileEntry
       :defs $ {}
+        'DispatchOp $ %{} 'CodeEntry
+          :doc "|Open Enum alias for the Respo dispatch slot. The representative value is not dispatched; app, Alerts and Reel operations keep their existing constructors and runtime decoding."
+          :code $ quote $ def DispatchOp (:: :unhandled)
+          :examples $ []
+          :schema $ :: 'Enum
         'DisplayType $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defenum DisplayType (:json) (:cirru-edn) (:json5) (:f-json) (:cson) (:edn)
           :examples $ []

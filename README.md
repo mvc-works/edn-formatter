@@ -14,6 +14,20 @@ Released COS action v1.2.0 validates HTML references and publicly verifies the
 upload itself, without an extra checker. Runs queue per PR and separately for
 production, without cancellation; original server deployment paths are unchanged.
 
+### 0.31.0 迁移：用户需要注意
+
+CLI/procs 配对正式 `0.31.0`。请重新安装依赖、生成 JS 并完整刷新；
+Alerts `0.11.0-alpha.3`、Reel `0.7.0-alpha.4`、UI `0.9.0-alpha.4`、
+Respo `0.17.0-alpha.4` 是已发布配套标签，仍有 alpha 依赖，不宣称全部稳定。
+
+原匿名 Enum 操作保留，通过显式 Enum schema 别名绑定 Respo dispatch-op。
+Pick/Drop 按钮补充实际事件与派发函数参数类型，并在打开对话框后明确返回 Unit；
+转换、路径类型和错误处理不变。清理已失效的 reel.util/generate-id! 导入，
+原调用继续使用内置函数。HUD、原存档策略与类型债务上限均保留。
+
+迁移完成状态以本轮原门禁、15 项回归及实际页面验收为准；下述历史结果不替代
+本轮验收。COS 仅上传前端并使用 action 自身校验，服务器路径不变。
+
 ### 0.30.1 迁移：用户需要注意
 
 配对正式 Calcit/procs `0.30.1`，依赖使用正式 Alerts `0.10.57`、
@@ -41,7 +55,7 @@ nil 16→13；完整 strict 作为本地迁移验收通过，不恢复为日常 
 
 ### Workflow
 
-Requires formal Calcit 0.30.1, Caps 0.1.1, Node.js 24 and Yarn 4.18.0.
+Requires formal Calcit 0.31.0, Caps 0.1.1, Node.js 24 and Yarn 4.18.0.
 Only `calcit.cirru` and `deps.cirru` are canonical; do not restore the retired
 `compact.cirru` or `package.cirru` files.
 
