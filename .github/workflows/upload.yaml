@@ -54,9 +54,10 @@ jobs:
       run: |
         set -euo pipefail
         calcit calcit.cirru edit format
-        git diff --exit-code -- calcit.cirru
+        git diff --exit-code --quiet -- calcit.cirru
         # hard gate: preprocessing must be warning-free
         calcit calcit.cirru --check-only --all-defs --format json
+        calcit calcit.cirru fix --workflow strict --verify --format json | jq -e '.data.workflow.status == "passed" and .diagnostics == []'
         calcit calcit.cirru --check-only --ns app.comp.container --ns app.config --ns app.main --ns app.schema --ns app.updater --summary-only
         calcit calcit.cirru analyze weak-types --only dynamic-method --summary-only --format json | jq -e '.data.summary.findings == 0'
         mkdir -p .calcit/upgrade
@@ -90,7 +91,7 @@ jobs:
 
     - name: Retain tested preview
       if: github.event_name == 'pull_request'
-      uses: actions/upload-artifact@v7.0.0
+      uses: actions/upload-artifact@v7.0.2
       with:
         name: formatter-preview
         path: dist/
