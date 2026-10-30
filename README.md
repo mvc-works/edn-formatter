@@ -1,101 +1,47 @@
+# EDN Formatter
 
-edn formatter
-----
+浏览器中的 JSON/JSON5、EDN、Cirru EDN 解析与多格式输出工具。
 
-> A browser formatter for JSON/JSON5, EDN and Cirru EDN input, with multiple output formats.
+[Demo](http://repo.tiye.me/mvc-works/edn-formatter/)
 
-http://repo.tiye.me/mvc-works/edn-formatter/
+## 0.32.1 迁移候选：使用者影响
 
-The existing web entry remains at that URL. GitHub Actions also uploads the
-frontend `dist/` assets to COS at
-`https://cos-sh.tiye.me/mvc-works/edn-formatter/` and builds asset references
-against that CDN path. Pull requests use `pr/<number>/<run-id>/<attempt>/`.
-Released COS action v1.2.0 validates HTML references and publicly verifies the
-upload itself, without an extra checker. Runs queue per PR and separately for
-production, without cancellation; original server deployment paths are unchanged.
+CLI / `@calcit/procs` 配对正式 **0.32.1**，升级后需重新安装完整模块图、生成 JS 并完整刷新。模块使用已发布 Respo 0.17.1、UI 0.9.0、Alerts 0.11.0-alpha.4、Reel 0.7.0-alpha.5，传递 JS FFI 0.2.9 / Router 0.9.0-alpha.4；仍有 alpha 依赖，不宣称整图均为正式版。
 
-### 0.32.0 迁移候选：用户需要注意
+官方 formatter 迁移 11 处类型表示；31 个定义的 schema、原测试和运行逻辑保持，Snapshot 与原 main 经同一官方 formatter 规范化后逐字节相同。解析、六种格式输出、Pick/Drop/Tidy、真实错误展示、匿名 Enum、HUD 和存档策略不变，不添加转换、默认值或编译器改写规则。
 
-CLI/procs 配对正式 0.32.0，需要重新安装依赖、生成 JS 并完整刷新。
-配套声明为 Alerts 0.11.0、Reel 0.7.0、UI 0.9.0 和 Respo 0.17.0；
-本轮使用这些模块的本地候选，正式标签整图尚待验收。
+JSON/JSON5 对象键仍是 String，Pick/Drop 路径要匹配真实类型：String 键用 `|a`，Tag 键用 `:a`。无效输入按原逻辑显示真实错误消息；列表中缺失路径仍可返回 nil，不擅自改变业务含义。
 
-官方工具转换 11 处旧类型写法，31 个定义的 schema 保持；解析、格式输出、
-Pick/Drop/Tidy、错误展示、匿名 Enum、HUD 和存档策略不变。
-不放宽现有类型债务基线，不新增迁移脚本；npm 发布年龄门禁恢复为一小时。
-本轮全部定义、完整 strict、原类型债务基线、原 15 项回归、构建及 immutable 安装
-通过。实际页面验证 JSON→Cirru、String 键 Pick 和非法路径错误展示；独立评审
-无待处理问题。保留原 showData 注入提示，未操作剪贴板。正式依赖整图和远端 CI
-尚待验证，下面的历史结果不代表这些项目已通过。
+原本注释掉的自动恢复仍未启用，不因本轮升级额外读取已有存档。手动 `:hydrate-storage` 保留字段检查；解析序列化 Store 必须提供 Store、DisplayType、Option 的类型映射，不能用名称代替 Enum 身份。原存储键和格式保持。
 
-### 0.31.0 迁移：用户需要注意
+## 开发与验证
 
-CLI/procs 配对正式 `0.31.0`。请重新安装依赖、生成 JS 并完整刷新；
-Alerts `0.11.0-alpha.3`、Reel `0.7.0-alpha.4`、UI `0.9.0-alpha.4`、
-Respo `0.17.0-alpha.4` 是已发布配套标签，仍有 alpha 依赖，不宣称全部稳定。
-
-原匿名 Enum 操作保留，通过显式 Enum schema 别名绑定 Respo dispatch-op。
-Pick/Drop 按钮补充实际事件与派发函数参数类型，并在打开对话框后明确返回 Unit；
-转换、路径类型和错误处理不变。清理已失效的 reel.util/generate-id! 导入，
-原调用继续使用内置函数。HUD、原存档策略与类型债务上限均保留。
-
-迁移完成状态以本轮原门禁、15 项回归及实际页面验收为准；下述历史结果不替代
-本轮验收。COS 仅上传前端并使用 action 自身校验，服务器路径不变。
-
-### 0.30.1 迁移：用户需要注意
-
-配对正式 Calcit/procs `0.30.1`，依赖使用正式 Alerts `0.10.57`、
-Reel `0.6.41`、UI `0.8.0`、Respo `0.16.124`。升级后请完整刷新，不跨热重载保留旧
-Map Reel。现有解析/六种格式输出、Pick/Drop/Tidy 和匿名 Enum 操作协议保留。
-持久化 key 和格式不变，原来注释掉的自动恢复逻辑仍未启用，不静默开启额外数据读取。
-手动调用 `:hydrate-storage` 时会递归校验字段；从存档解析 Store 必须提供 Store、
-DisplayType、Option 的类型映射。无映射解析会丢失 Enum 身份，不能直接当作有效 Store。
-已回放有类型映射的存档往返，以及缺失 Enum 身份、错误 text 类型的拒绝行为。
-
-JSON/JSON5 导入的对象键继续为 String，Pick/Drop 路径应匹配真实类型：例如 String
-键用 `|a`，Tag 键才用 `:a`，迁移不会强行改变这项数据语义。
-无效输入现在显示 `try` 提供的真实错误消息，不再把 String 当 JS Error 读取 `.message`
-而显示 `&unit`。这是按既有语言合同修复应用，不添加编译器改写规则。
-
-源码 unsafe 10→0、类型断言 2→0，移除错误的 FracturedSerializedHost 模型，
-改用现有 JS host 检查和 String 返回值验证；真实 Store 由 typed Reel 保留，
-异构数据/状态边界不伪装成未定义的 Any 或精确业务类型。
-
-旧版基线和新版 15 项回归通过，业务断言/测试数量不变；夹具只适配新版
-ChildPair/RenderNode。既有债务基线未放宽：部分类型 12→10、schema Dynamic 19→9、
-nil 16→13；完整 strict 作为本地迁移验收通过，不恢复为日常 CI 的重复迁移 planner。
-浏览器已验证 Command-Enter、格式选中状态、Pick 对话框和真实错误显示。
-本地未运行 Caps；干净安装、远端构建和 COS 内置 verify 以 Actions 结果为准。
-
-### Workflow
-
-Requires formal Calcit 0.32.0, Caps 0.1.1, Node.js 24 and Yarn 4.18.0.
-Only `calcit.cirru` and `deps.cirru` are canonical; do not restore the retired
-`compact.cirru` or `package.cirru` files.
+使用 Node.js 24、Yarn 4.18.0、Caps 0.1.1。一小时 npm 发布等待，无单包豁免；源码仅为 `calcit.cirru` / `deps.cirru`，不提交 `js-out/`、`dist/` 或退役的 compact/package Snapshot。
 
 ```sh
 caps --strict --ci
 yarn install --immutable
 caps verify --toolchain
+calcit --check-only --all-defs
+calcit fix --workflow strict --verify
 yarn build
 node --test scripts/formatter-regression.test.mjs
 ```
 
-`yarn build` compiles the default JS browser entry and builds once. `yarn dev`
-compiles initially and starts Vite; run `calcit calcit.cirru -w` in another
-terminal for live edits. CI retains canonical/entry/public, existing type-debt
-baseline and business checks; repeated migration verification is removed.
-Actions use exact formal tags whose commits were already reviewed; movable-tag
-risk is accepted by the user. No extra COS checker, test framework or concurrently
-is added. Public CDN access/certificate problems are not bypassed, and a successful
-upload is not claimed as successful public verification or production deployment.
+原 CI 的 canonical、全部/公开定义、动态方法零、类型债务基线和 15 项业务回归均保留，并补上完整 strict 的 passed/空诊断门禁，不把迁移工具临时结果当作日常验收。仅将现有基线上限收紧到实际值：typeNotFull 12→10、schemaDynamic 19→9、codeNil 16→13，其余预算不变。没有新增验证脚本、测试框架、强转或预算豁免。
 
-已将上游 Agent 指南的过期 watcher 示例反馈到
-[Respo #278](https://github.com/Respo/respo.calcit/issues/278)，建议收敛文档提示，
-不增加新的 proof/fix 规则或专用脚本。
+本轮本地 260 个定义、31 个公开定义、完整 strict（passed 且 diagnostics 为空）、原 15 项 Node 回归、动态方法零、收紧后的基线、immutable、docs/canonical 和构建通过。已用真实 Caps strict 重新解析已发布模块并通过 toolchain 校验；模块的不可变源码与先前本地测试一致。最新 main 未变化且无重复迁移 PR；远端 CI 仍待完成。
 
-Workflow https://github.com/mvc-works/coworkflow
+本轮 0.32.1 实际页面验证合成 JSON→Cirru、String 键 Pick 得到 1、弹窗关闭、坏 JSON 真实错误文字和刷新。控制台无 error，保留原 window.showData 注入提示。未操作系统剪贴板，未复验 Drop/Tidy 的浏览器交互、手动存档或 HMR。
 
-### License
+`yarn dev` 先编译再启动 Vite，实时编辑另开终端运行 `calcit -w calcit.cirru`。上游 watcher 文档反馈见 [Respo #278](https://github.com/Respo/respo.calcit/issues/278)，不增加 proof/fix 特例或项目脚本。
+
+## 前端部署
+
+前端 dist 使用 `https://cos-sh.tiye.me/mvc-works/edn-formatter/`；PR 前缀为 `pr/<number>/<run-id>/<attempt>/`。Vite 与 COS action v1.2.0 使用同一 base URL，校验由 action 内置 verify 执行，不另加上传检查脚本。
+
+上传按 PR/生产分别排队不中断，原 main-only rsync 和 `/web-assets/repo/mvc-works/edn-formatter/` 路径保持。仅创建迁移 PR 与隔离前端预览，不合并、不部署生产、不发布 tag/npm。
+
+## License
 
 MIT
