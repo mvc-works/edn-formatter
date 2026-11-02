@@ -19,7 +19,7 @@ const current = {
   schemaDynamic: weakTypes.kinds["schema-dynamic"],
   codeDynamic: weakTypes.kinds["code-dynamic"],
   codeNil: weakTypes.kinds["code-nil"],
-  declaredOptional: weakTypes.intents["declared-optional"],
+  declaredUnit: weakTypes.intents["declared-unit"],
   deprecatedCalls: deprecated.calls,
 };
 

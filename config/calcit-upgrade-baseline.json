@@ -1,9 +1,9 @@
 {
   "typeNone": 0,
   "typeNotFull": 10,
-  "schemaDynamic": 9,
+  "schemaDynamic": 8,
   "codeDynamic": 0,
   "codeNil": 13,
-  "declaredOptional": 0,
-  "deprecatedCalls": 0
+  "deprecatedCalls": 0,
+  "declaredUnit": 0
 }
