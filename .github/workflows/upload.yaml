@@ -62,7 +62,7 @@ jobs:
         calcit calcit.cirru analyze weak-types --only dynamic-method --summary-only --format json | jq -e '.data.summary.findings == 0'
         mkdir -p .calcit/upgrade
         calcit calcit.cirru analyze weak-types --only coverage --summary-only --format json > .calcit/upgrade/check-types.json
-        calcit calcit.cirru analyze weak-types --only schema-dynamic,code-dynamic,code-nil --intent unresolved,declared-optional --summary-only --format json > .calcit/upgrade/weak-types.json
+        calcit calcit.cirru analyze weak-types --only schema-dynamic,code-dynamic,code-nil --intent unresolved,declared-unit --summary-only --format json > .calcit/upgrade/weak-types.json
         calcit calcit.cirru analyze weak-types --only deprecated-call --summary-only --format json > .calcit/upgrade/deprecated.json
         node scripts/check-calcit-upgrade-baseline.mjs
 

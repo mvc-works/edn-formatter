@@ -96,3 +96,13 @@ test('Pick unwraps Option for list entries and preserves missing paths as nil', 
   const next = updater(initial, c._$o__$o_(t.pick, c._$L_(t.a)), 'pick-list', 1);
   assert.deepEqual(c.to_js_data(field(next, t.data)), [1, null]);
 });
+
+test('state cursors accept Tag/String/Number and reject Bool without restricting data keys', () => {
+  for (const key of [t.a, 'panel', 7]) {
+    const next = updater(store, c._$o__$o_(t.states, c._$L_(key), false), 'state', 1);
+    assert.equal(field(field(field(next, t.states), key), t.data), false);
+  }
+  assert.throws(() => updater(store, c._$o__$o_(t.states, c._$L_(true), false), 'invalid-state', 1));
+  const next = updater(store, c._$o__$o_(t.data, map(t.data, map(true, 'preserved'), t.error, null)), 'data', 1);
+  assert.equal(field(field(next, t.data), true), 'preserved');
+});

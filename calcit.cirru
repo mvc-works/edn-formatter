@@ -39,8 +39,12 @@
                 comp-drafter (>> states :drafter) store
                 =< 2 nil
                 comp-previewer (>> states :previewer) store
-                when config/dev? $ comp-inspect |state store $ {} (:bottom 8)
-                when config/dev? $ comp-typed-reel (>> states :reel) reel $ {}
+                if config/dev?
+                  Option :some $ comp-inspect |state store $ {} (:bottom 8)
+                  Option :none
+                if config/dev?
+                  Option :some $ comp-typed-reel (>> states :reel) reel $ {}
+                  Option :none
           :examples $ []
           :schema $ quote $ Fn (reel.typed/State Enum app.schema/Store) (-> respo.schema/Component)
         'comp-drafter $ %{} 'CodeEntry (:doc |)
@@ -249,7 +253,7 @@
             cond
                 map? xs
                 filter-map-kv
-                  decode-map-as xs $ :: 'Map 'Dynamic 'Dynamic
+                  decode-map-as xs $ quote $ Map Dynamic Dynamic
                   fn (k v)
                     hint-fn $ Fn Dynamic Dynamic $ -> (MapEntryDecision Dynamic Dynamic)
                     MapEntryDecision :keep k $ keywordize-data v
@@ -283,7 +287,7 @@
           :code $ quote $ def style-button
             {} (:border-radius |4px) (:line-height |26px) (:padding "|0 12px")
           :examples $ []
-          :schema $ quote Dynamic
+          :schema $ quote $ Map Tag String
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.comp.container
           :require
@@ -410,6 +414,10 @@
             reel.util :refer $ listen-devtools!
     'app.schema $ %{} 'FileEntry
       :defs $ {}
+        'CursorKey $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defunion CursorKey Tag String Number
+          :examples $ []
+          :schema $ quote UnionDef
         'DispatchOp $ %{} 'CodeEntry
           :doc "|Open Enum alias for the Respo dispatch slot. The representative value is not dispatched; app, Alerts and Reel operations keep their existing constructors and runtime decoding."
           :code $ quote $ def DispatchOp (:: :unhandled)
@@ -421,9 +429,9 @@
           :schema $ quote EnumDef
         'Store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstruct Store
-            :states $ quote $ Map Dynamic Dynamic
-            :text 'String
-            :data 'Dynamic
+            :states $ quote $ Map app.schema/CursorKey Dynamic
+            :text String
+            :data Dynamic
             :error $ quote $ Option String
             :display-type DisplayType
           :examples $ []
@@ -464,9 +472,9 @@
               (:states cursor s)
                 assoc store :states $ decode-map-as
                   update-state-tree (:states store)
-                    decode-map-as cursor $ :: 'List 'Dynamic
+                    decode-map-as cursor $ quote $ List app.schema/CursorKey
                     , s
-                  :: 'Map 'Dynamic 'Dynamic
+                  quote $ Map app.schema/CursorKey Dynamic
               (:hydrate-storage d)
                 if (struct? d)
                   struct-match d
@@ -480,16 +488,16 @@
               (:pick d)
                 assoc
                   update store :data $ fn (data)
-                    pick-from data $ decode-map-as d $ :: 'List 'Dynamic
+                    pick-from data $ decode-map-as d $ quote (List Dynamic)
                   , :error $ Option :none
               (:drop d)
                 assoc
                   update store :data $ fn (data)
-                    drop-from data $ decode-map-as d $ :: 'List 'Dynamic
+                    drop-from data $ decode-map-as d $ quote (List Dynamic)
                   , :error $ Option :none
               (:data d)
                 let
-                    result $ decode-map-as d $ :: 'Map 'Tag 'Dynamic
+                    result $ decode-map-as d $ quote (Map Tag Dynamic)
                   struct-with store
                     :data $ .unwrap-or (get result :data) nil
                     :error $ if
