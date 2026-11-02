@@ -6,7 +6,7 @@
 
 ## 对使用者的影响
 
-CLI 与 `@calcit/procs` 配对升级到正式 **0.34.1**。升级后重新安装依赖、生成 JS 并完整刷新。依赖图全部使用正式版本：Alerts 0.11.1、Reel 0.7.1、UI 0.10.0、Respo 0.18.0，传递 JS FFI 0.2.9 / Router 0.9.0。Reel/UI 与 Alerts 的已发布依赖保持一致；尚未切换到最新 Reel 0.8.0 / UI 0.12.0，避免绕过 Caps strict 的版本冲突检查。
+CLI 与 `@calcit/procs` 配对升级到正式 **0.34.1**。升级后重新安装依赖、生成 JS 并完整刷新。依赖图全部使用正式版本：Alerts 0.11.2、Reel 0.8.0、UI 0.12.0、Respo 0.18.0，传递 JS FFI 0.2.9 / Router 0.10.0。Alerts、Reel 和 UI 使用一致的正式依赖图。
 
 UI 状态游标现在明确为 `CursorKey = Tag | String | Number`，`Store.states` 的顶层键使用同一类型。非法 Bool 等游标会在 updater 的真实解码入口失败；手动恢复包含非法顶层状态键的 Store 也会失败。正常组件游标和混合 String/Number 键保持支持，状态 payload 仍可为 false 等任意业务值。
 
