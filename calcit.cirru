@@ -70,8 +70,7 @@
                         :border-color $ hsl 200 90 64
                       :on-click $ fn (e d!)
                         handle-result
-                          fn () $ keywordize-data $ to-calcit-data
-                            parse-json5 $ :text store
+                          fn () $ to-calcit-data $ parse-json5 (:text store)
                           , d!
                     =< 8 nil
                     button $ {} (:inner-text "|Read Cirru") (:class-name css/button)
@@ -103,7 +102,7 @@
                   fn (content d!)
                     hint-fn $ Fn String Fn $ -> Unit
                     handle-result
-                      fn () $ keywordize-data $ to-calcit-data (parse-json5 content)
+                      fn () $ to-calcit-data $ parse-json5 content
                       , d!
                     , &unit
           :examples $ []
@@ -248,19 +247,6 @@
               _ $ str "|Unknown type: " type
           :examples $ []
           :schema $ quote $ Fn Dynamic app.schema/DisplayType (-> String) (:features :js-ffi)
-        'keywordize-data $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn keywordize-data (xs)
-            cond
-                map? xs
-                filter-map-kv
-                  decode-map-as xs $ quote $ Map Dynamic Dynamic
-                  fn (k v)
-                    hint-fn $ Fn Dynamic Dynamic $ -> (MapEntryDecision Dynamic Dynamic)
-                    MapEntryDecision :keep k $ keywordize-data v
-              (list? xs) (map xs keywordize-data)
-              true xs
-          :examples $ []
-          :schema $ quote $ Fn Dynamic (-> Dynamic) (:features :js-ffi)
         'parse-json5 $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn parse-json5 (content)
             let
