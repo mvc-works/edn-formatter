@@ -6,7 +6,7 @@
 
 ## 对使用者的影响
 
-CLI 与 `@calcit/procs` 配对升级到正式 **0.34.2**。升级后重新安装依赖、生成 JS 并完整刷新。依赖图全部使用正式版本：Alerts 0.11.3、Reel 0.8.1、UI 0.12.1、Respo 0.18.1，传递 JS FFI 0.2.9 / Router 0.10.1。这些兼容 patch 对齐 0.34.2，不切换 Respo 的框架 minor。
+CLI 与 `@calcit/procs` 配对升级到正式 **0.35.1**。升级后重新安装依赖、生成 JS 并完整刷新。正式依赖为 Alerts 0.13.1、Reel 0.9.2、UI 0.15.1、Respo 0.19.4，传递 JS FFI 0.2.13 / Router 0.12.1。提示框回调使用 `RespoEvent`，派发入口使用 `AnyEnum`。
 
 UI 状态游标现在明确为 `CursorKey = Tag | String | Number`，`Store.states` 的顶层键使用同一类型。非法 Bool 等游标会在 updater 的真实解码入口失败；手动恢复包含非法顶层状态键的 Store 也会失败。正常组件游标和混合 String/Number 键保持支持，状态 payload 仍可为 false 等任意业务值。
 
@@ -34,7 +34,7 @@ yarn build
 node --test scripts/formatter-regression.test.mjs
 ```
 
-原 canonical、全部/公开定义、完整 strict、动态方法零发现和类型债务基线门禁保持，基线文件与原 16 项业务回归未修改，不新增验证脚本或测试框架。本地 263 个全部定义（含加载的依赖与元定义）、31 个项目公开定义、完整 strict、原门禁、16 项业务回归、构建及真实 comp-container 的 release/dev HTML 渲染通过（2796/3052 字节）。当前 typeNotFull 为 9、schemaDynamic 为 8、codeNil 为 13，均在原预算内。Linux CI 以 PR 精确提交记录为准；HTML 渲染不等于真实浏览器交互验收，本轮不沿用旧版本的浏览器验收作为新版本证据。
+原 canonical、全部及公开定义、完整 strict、动态方法检查和类型债务基线保留。0.35.1 的原 16 项业务回归及构建通过。
 
 `yarn dev` 先编译再启动 Vite，实时编辑另开终端运行 `calcit -w calcit.cirru`。上游 watcher 文档反馈见 [Respo #278](https://github.com/Respo/respo.calcit/issues/278)。
 

@@ -12,17 +12,15 @@
       :defs $ {}
         'FracturedFormatterHost $ %{} 'CodeEntry (:doc |)
           :code $ quote $ deftrait FracturedFormatterHost
-            .serialize $ quote $ Fn FracturedFormatterHost Dynamic
-              -> $ JsNullish JsObject
+            .serialize $ Fn FracturedFormatterHost Dynamic $ -> (JsNullish JsObject)
           :examples $ []
           :ffi $ {} (:backend :js) (:kind :external-object) (:target :browser)
             :names $ {} $ :serialize |Serialize
           :schema $ quote Trait
         'Json5Host $ %{} 'CodeEntry (:doc |)
           :code $ quote $ deftrait Json5Host
-            .parse $ quote $ Fn Json5Host String (-> Dynamic)
-            .stringify $ quote $ Fn Json5Host Dynamic Dynamic Number
-              -> $ JsNullish JsObject
+            .parse $ Fn Json5Host String $ -> Dynamic
+            .stringify $ Fn Json5Host Dynamic Dynamic Number $ -> (JsNullish JsObject)
           :examples $ []
           :ffi $ {} (:backend :js) (:kind :external-object) (:target :browser)
             :names $ {} (:parse |parse) (:stringify |stringify)
@@ -37,7 +35,7 @@
                   :class-name $ str-spaced css/preset css/row css/fullscreen css/global css/flex
                   :style $ &{} :width |100%
                 comp-drafter (>> states :drafter) store
-                =< 2 nil
+                space-x 2
                 comp-previewer (>> states :previewer) store
                 if config/dev?
                   Option :some $ comp-inspect |state store $ {} (:bottom 8)
@@ -46,7 +44,7 @@
                   Option :some $ comp-typed-reel (>> states :reel) reel $ {}
                   Option :none
           :examples $ []
-          :schema $ quote $ Fn (reel.typed/State Enum app.schema/Store) (-> respo.schema/Component)
+          :schema $ quote $ Fn (reel.typed/State AnyEnum app.schema/Store) (-> respo.schema/Component)
         'comp-drafter $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-drafter (states store)
             let
@@ -72,13 +70,13 @@
                         handle-result
                           fn () $ to-calcit-data $ parse-json5 (:text store)
                           , d!
-                    =< 8 nil
+                    space-x 8
                     button $ {} (:inner-text "|Read Cirru") (:class-name css/button)
                       :on-click $ fn (e d!)
                         handle-result
                           fn () $ parse-cirru-edn $ :text store
                           , d!
-                    =< 8 nil
+                    space-x 8
                     a $ {} (:inner-text "|Read EDN")
                       :class-name $ str-spaced css/link
                       :on-click $ fn (e d!)
@@ -145,8 +143,8 @@
                         copy! $ display-data (:data store) (:display-type store)
                     a $ {} (:inner-text |Pick) (:class-name css/link)
                       :on-click $ fn (e d!)
-                        hint-fn $ Fn (Map Tag Dynamic)
-                          Fn Enum $ -> Unit
+                        hint-fn $ Fn respo.schema/RespoEvent
+                          Fn AnyEnum $ -> Unit
                           -> Unit
                         .show picker-plugin d! $ fn (text)
                           hint-fn $ Fn String $ -> Unit
@@ -163,8 +161,8 @@
                         , &unit
                     a $ {} (:inner-text |Drop) (:class-name css/link)
                       :on-click $ fn (e d!)
-                        hint-fn $ Fn (Map Tag Dynamic)
-                          Fn Enum $ -> Unit
+                        hint-fn $ Fn respo.schema/RespoEvent
+                          Fn AnyEnum $ -> Unit
                           -> Unit
                         .show picker-plugin d! $ fn (text)
                           hint-fn $ Fn String $ -> Unit
@@ -280,7 +278,7 @@
             respo-ui.core :refer $ hsl
             respo-ui.core :as ui
             respo.core :refer $ defcomp >> list-> <> div button span textarea pre a defeffect
-            respo.comp.space :refer $ =<
+            respo.comp.space :refer $ space-x space-y
             respo.comp.inspect :refer $ comp-inspect
             reel.comp.reel :refer $ comp-typed-reel
             |copy-text-to-clipboard :default copy!
@@ -313,22 +311,19 @@
         '*reel $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defref *reel (typed/new-reel schema/store)
           :examples $ []
-          :schema $ quote $ Ref (reel.typed/State Enum app.schema/Store)
+          :schema $ quote $ Ref (reel.typed/State AnyEnum app.schema/Store)
         'dispatch! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn dispatch! (op)
-            if (enum? op)
-              do
-                when config/dev? $ println |Dispatch: op
-                match (typed/decode-control op)
-                  (:some control)
-                    reset! *reel $ typed/apply-control updater @*reel control
-                  (:none)
-                    reset! *reel $ typed/record-op updater @*reel op (generate-id!)
-                      :timestamp $ shared/date-now-snapshot
-                , &unit
-              raise "|Expected an operation enum"
+            when config/dev? $ println |Dispatch: op
+            match (typed/decode-control op)
+              (:some control)
+                reset! *reel $ typed/apply-control updater @*reel control
+              (:none)
+                reset! *reel $ typed/record-op updater @*reel op (generate-id!)
+                  :timestamp $ shared/date-now-snapshot
+            , &unit
           :examples $ []
-          :schema $ quote $ Fn Dynamic (-> Unit)
+          :schema $ quote $ Fn AnyEnum (-> Unit)
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! ()
             println "|Running mode:" $ if config/dev?
@@ -408,17 +403,17 @@
           :doc "|Open Enum alias for the Respo dispatch slot. The representative value is not dispatched; app, Alerts and Reel operations keep their existing constructors and runtime decoding."
           :code $ quote $ def DispatchOp (:: :unhandled)
           :examples $ []
-          :schema $ quote Enum
+          :schema $ quote AnyEnum
         'DisplayType $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defenum DisplayType (:json) (:cirru-edn) (:json5) (:f-json) (:cson) (:edn)
           :examples $ []
           :schema $ quote EnumDef
         'Store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstruct Store
-            :states $ quote $ Map app.schema/CursorKey Dynamic
+            :states $ Map app.schema/CursorKey Dynamic
             :text String
             :data Dynamic
-            :error $ quote $ Option String
+            :error $ Option String
             :display-type DisplayType
           :examples $ []
           :schema $ quote StructDef
@@ -458,9 +453,9 @@
               (:states cursor s)
                 assoc store :states $ decode-map-as
                   update-state-tree (:states store)
-                    decode-map-as cursor $ quote $ List app.schema/CursorKey
+                    decode-map-as cursor $ List app.schema/CursorKey
                     , s
-                  quote $ Map app.schema/CursorKey Dynamic
+                  Map app.schema/CursorKey Dynamic
               (:hydrate-storage d)
                 if (struct? d)
                   struct-match d
@@ -474,16 +469,16 @@
               (:pick d)
                 assoc
                   update store :data $ fn (data)
-                    pick-from data $ decode-map-as d $ quote (List Dynamic)
+                    pick-from data $ decode-map-as d $ List Dynamic
                   , :error $ Option :none
               (:drop d)
                 assoc
                   update store :data $ fn (data)
-                    drop-from data $ decode-map-as d $ quote (List Dynamic)
+                    drop-from data $ decode-map-as d $ List Dynamic
                   , :error $ Option :none
               (:data d)
                 let
-                    result $ decode-map-as d $ quote (Map Tag Dynamic)
+                    result $ decode-map-as d $ Map Tag Dynamic
                   struct-with store
                     :data $ .unwrap-or (get result :data) nil
                     :error $ if
@@ -497,7 +492,7 @@
                     , data
               _ $ do (eprintln "|Unknown op:" op) store
           :examples $ []
-          :schema $ quote $ Fn app.schema/Store Enum String Number (-> app.schema/Store)
+          :schema $ quote $ Fn app.schema/Store AnyEnum String Number (-> app.schema/Store)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.updater
           :require
