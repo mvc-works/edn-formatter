@@ -6,7 +6,7 @@
     {} (:description |) (:init-fn 'app.main/main!) (:mode :js) (:reload-fn 'app.main/reload!) (:target :browser)
       :feature-policy $ {}
       :modules $ [] |respo.calcit/ |respo-ui.calcit/ |reel.calcit/ |alerts.calcit/
-      :type-slots $ {} $ :dispatch-op |app.schema/DispatchOp
+      :type-slots $ {} $ :dispatch-op 'app.schema/DispatchOp
   :files $ {}
     'app.comp.container $ %{} 'FileEntry
       :defs $ {}
@@ -44,7 +44,7 @@
                   Option :some $ comp-typed-reel (>> states :reel) reel $ {}
                   Option :none
           :examples $ []
-          :schema $ quote $ Fn (reel.typed/State AnyEnum app.schema/Store) (-> respo.schema/Component)
+          :schema $ quote $ Fn (reel.typed/State app.schema/Op app.schema/Store) (-> respo.schema/Component)
         'comp-drafter $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-drafter (states store)
             let
@@ -52,9 +52,9 @@
                   try
                     let
                         data $ f
-                      d! $ :: :data $ {} (:data data) (:error nil)
+                      d! $ app.schema/Op :data data $ Option :none
                     fn (err)
-                      d! $ :: :data $ {} (:data nil) (:error err)
+                      d! $ app.schema/Op :data nil $ Option :some err
               div
                 {} $ :class-name $ str-spaced css/flex css/column
                 div
@@ -98,7 +98,9 @@
                           , d!
                 comp-input-area (:text store)
                   fn (content d!)
-                    hint-fn $ Fn String Fn $ -> Unit
+                    hint-fn $ Fn String
+                      Fn app.schema/Op $ -> Unit
+                      -> Unit
                     handle-result
                       fn () $ to-calcit-data $ parse-json5 content
                       , d!
@@ -111,20 +113,26 @@
               :class-name $ str-spaced css/textarea css/flex css/font-code!
               :style $ {} (:font-size 12) (:word-break :break-all) (:border :none)
               :on-input $ fn (e d!)
-                d! $ :: :text $ .unwrap-or (get e :value) |
+                d! $ app.schema/Op :text $ decode-map-as
+                  .unwrap-or (get e :value) |
+                  , String
               :on-keydown $ fn (e d!)
+                hint-fn $ Fn respo.schema/RespoEvent
+                  Fn app.schema/Op $ -> Unit
+                  -> Unit
+                  :features :js-ffi
                 let
-                    event $ js-cast
-                      .unwrap $ get e :event
-                      , 'js-ffi.browser/KeyboardEventHost
+                    event $ js-cast (:event e) 'js-ffi.browser/KeyboardEventHost
                   if
                     and (.-meta-key? event)
                       = |Enter $ .-key event
-                    if (fn? d!) (on-parse text d!) (raise "|Expected a dispatch function")
+                    on-parse text d!
                     , &unit
           :examples $ []
           :schema $ quote $ Fn String
-            Fn String Fn $ -> Unit
+            Fn String
+              Fn app.schema/Op $ -> Unit
+              -> Unit
             -> respo.schema/Component
             :features :js-ffi
         'comp-previewer $ %{} 'CodeEntry (:doc |)
@@ -151,12 +159,11 @@
                           try
                             when
                               not $ blank? text
-                              d! $ :: :pick $ parse-cirru-edn
-                                str "|[] " $ trim text
+                              d! $ app.schema/Op :pick $ decode-map-as
+                                parse-cirru-edn $ str "|[] " $ trim text
+                                List Dynamic
                             fn (message)
-                              d! $ :: :data $ {}
-                                :data $ :data store
-                                :error message
+                              d! $ app.schema/Op :data (:data store) (Option :some message)
                           , &unit
                         , &unit
                     a $ {} (:inner-text |Drop) (:class-name css/link)
@@ -169,17 +176,16 @@
                           try
                             when
                               not $ blank? text
-                              d! $ :: :drop $ parse-cirru-edn
-                                str "|[] " $ trim text
+                              d! $ app.schema/Op :drop $ decode-map-as
+                                parse-cirru-edn $ str "|[] " $ trim text
+                                List Dynamic
                             fn (message)
-                              d! $ :: :data $ {}
-                                :data $ :data store
-                                :error message
+                              d! $ app.schema/Op :data (:data store) (Option :some message)
                           , &unit
                         , &unit
                     a $ {} (:inner-text "|Tidy list") (:class-name css/link)
                       :on-click $ fn (e d!)
-                        d! $ :: :tidy
+                        d! $ app.schema/Op :tidy
                   div
                     {} (:class-name css/row-middle)
                       :style $ {} (:padding 8) (:justify-content :flex-start)
@@ -207,7 +213,7 @@
                 :style $ {} $ :color
                   if (= current-type k) (hsl 200 80 50) (hsl 200 70 80)
                 :on-click $ fn (e d!)
-                  d! $ :: :display-type k
+                  d! $ app.schema/Op :display-type k
               <> label
           :examples $ []
           :schema $ quote $ Fn app.schema/DisplayType app.schema/DisplayType String (-> respo.schema/Component)
@@ -311,19 +317,22 @@
         '*reel $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defref *reel (typed/new-reel schema/store)
           :examples $ []
-          :schema $ quote $ Ref (reel.typed/State AnyEnum app.schema/Store)
+          :schema $ quote $ Ref (reel.typed/State app.schema/Op app.schema/Store)
         'dispatch! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn dispatch! (op)
             when config/dev? $ println |Dispatch: op
-            match (typed/decode-control op)
-              (:some control)
-                reset! *reel $ typed/apply-control updater @*reel control
-              (:none)
-                reset! *reel $ typed/record-op updater @*reel op (generate-id!)
-                  :timestamp $ shared/date-now-snapshot
+            let
+                resolved $ match (typed/decode-control op)
+                  (:some control) control
+                  (:none) (schema/decode-op op)
+              reset! *reel $ match (decode-map-as resolved app.schema/ResolvedOp)
+                (reel.typed/Control control) (typed/apply-control updater @*reel control)
+                (app.schema/Op action)
+                  typed/record-op updater @*reel action (generate-id!)
+                    :timestamp $ shared/date-now-snapshot
             , &unit
           :examples $ []
-          :schema $ quote $ Fn AnyEnum (-> Unit)
+          :schema $ quote $ Fn AnyEnum (-> Unit) (:open :decode)
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! ()
             println "|Running mode:" $ if config/dev?
@@ -408,6 +417,23 @@
           :code $ quote $ defenum DisplayType (:json) (:cirru-edn) (:json5) (:f-json) (:cson) (:edn)
           :examples $ []
           :schema $ quote EnumDef
+        'Op $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defenum Op
+            :states (List app.schema/CursorKey) Dynamic
+            :hydrate-storage app.schema/Store
+            :text String
+            :display-type app.schema/DisplayType
+            :pick $ List Dynamic
+            :drop $ List Dynamic
+            :data Dynamic $ Option String
+            :tidy
+            :unknown String
+          :examples $ []
+          :schema $ quote EnumDef
+        'ResolvedOp $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defunion ResolvedOp app.schema/Op reel.typed/Control
+          :examples $ []
+          :schema $ quote UnionDef
         'Store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstruct Store
             :states $ Map app.schema/CursorKey Dynamic
@@ -417,6 +443,45 @@
             :display-type DisplayType
           :examples $ []
           :schema $ quote StructDef
+        'decode-op $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn decode-op (raw)
+            if
+              = (enum-definition raw) (Option :some Op)
+              decode-map-as raw Op
+              match raw
+                (:states cursor data)
+                  Op :states
+                    decode-map-as cursor $ List app.schema/CursorKey
+                    , data
+                (:hydrate-storage data)
+                  Op :hydrate-storage $ if (struct? data)
+                    struct-match data
+                      Store checked $ decode-map-as (.to-map checked) Store
+                      _ _ $ raise "|Expected a Store struct"
+                    decode-map-as data Store
+                (:text text)
+                  Op :text $ decode-map-as text String
+                (:display-type mode)
+                  Op :display-type $ decode-map-as mode DisplayType
+                (:pick path)
+                  Op :pick $ decode-map-as path $ List Dynamic
+                (:drop path)
+                  Op :drop $ decode-map-as path $ List Dynamic
+                (:data data)
+                  let
+                      result $ decode-map-as data $ Map Tag Dynamic
+                      error $ match (get result :error)
+                        (:some error)
+                          if (nil? error) (Option :none)
+                            Option :some $ str error
+                        (:none) (Option :none)
+                    match (get result :data)
+                      (:some value) (Op :data value error)
+                      (:none) (Op :data nil error)
+                (:tidy) (Op :tidy)
+                _ $ Op :unknown $ str raw
+          :examples $ []
+          :schema $ quote $ Fn AnyEnum (-> app.schema/Op) (:open :decode)
         'store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def store
             Store :states (&{}) :text | :data nil :error (Option :none) :display-type $ DisplayType :json
@@ -448,51 +513,34 @@
           :examples $ []
           :schema $ quote $ Fn Dynamic (List Dynamic) (-> Dynamic)
         'updater $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn updater (store op op-id op-time)
+          :code $ quote $ defn updater (store op _op-id _op-time)
             match op
-              (:states cursor s)
+              (:states cursor state)
                 assoc store :states $ decode-map-as
-                  update-state-tree (:states store)
-                    decode-map-as cursor $ List app.schema/CursorKey
-                    , s
+                  update-state-tree (:states store) cursor state
                   Map app.schema/CursorKey Dynamic
-              (:hydrate-storage d)
-                if (struct? d)
-                  struct-match d
-                    schema/Store checked $ decode-map-as (.to-map checked) 'app.schema/Store
-                    _ other $ raise "|Expected a Store struct"
-                  decode-map-as d 'app.schema/Store
-              (:text t)
-                assoc store :text $ decode-map-as t 'String
-              (:display-type t)
-                assoc store :display-type $ decode-map-as t 'app.schema/DisplayType
-              (:pick d)
-                assoc
-                  update store :data $ fn (data)
-                    pick-from data $ decode-map-as d $ List Dynamic
-                  , :error $ Option :none
-              (:drop d)
-                assoc
-                  update store :data $ fn (data)
-                    drop-from data $ decode-map-as d $ List Dynamic
-                  , :error $ Option :none
-              (:data d)
-                let
-                    result $ decode-map-as d $ Map Tag Dynamic
-                  struct-with store
-                    :data $ .unwrap-or (get result :data) nil
-                    :error $ if
-                      nil? $ .unwrap-or (get result :error) nil
-                      Option :none
-                      Option :some $ str $ .unwrap-or (get result :error) |
+              (:hydrate-storage data) data
+              (:text text) (assoc store :text text)
+              (:display-type mode) (assoc store :display-type mode)
+              (:pick path)
+                struct-with store
+                  :data $ pick-from (:data store) path
+                  :error $ Option :none
+              (:drop path)
+                struct-with store
+                  :data $ drop-from (:data store) path
+                  :error $ Option :none
+              (:data data error)
+                struct-with store (:data data) (:error error)
               (:tidy)
                 update store :data $ fn (data)
                   if (list? data)
                     sort (distinct data) &compare
                     , data
-              _ $ do (eprintln "|Unknown op:" op) store
+              (:unknown message)
+                do (eprintln "|Unknown op:" message) store
           :examples $ []
-          :schema $ quote $ Fn app.schema/Store AnyEnum String Number (-> app.schema/Store)
+          :schema $ quote $ Fn app.schema/Store app.schema/Op String Number (-> app.schema/Store)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.updater
           :require

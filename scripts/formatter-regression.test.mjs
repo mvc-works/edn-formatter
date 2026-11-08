@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import * as c from '../js-out/calcit.core.mjs';
 import { comp_drafter, comp_input_area, comp_type_label, comp_previewer, display_data } from '../js-out/app.comp.container.mjs';
-import { DisplayType, store } from '../js-out/app.schema.mjs';
+import { decode_op, DisplayType, store } from '../js-out/app.schema.mjs';
 import { updater } from '../js-out/app.updater.mjs';
 import { component_$q_, component_tree, render_node_value } from '../js-out/respo.util.detect.mjs';
 import { make_string } from '../js-out/respo.render.html.mjs';
@@ -46,7 +46,7 @@ for (const [label, source] of [['Read JSON', '{a: 1,}'], ['Read JSON', '{"a":1}'
     const initial = withField(store, t.text, source);
     const op = runEvent(handler(comp_drafter(map(), initial), t.click, label));
     assert.equal(en(op, 0), t.data);
-    const next = updater(initial, op, 'read', 1);
+    const next = updater(initial, decode_op(op), 'read', 1);
     assert.deepEqual(c.to_js_data(field(next, t.data)), { a: 1 });
     assert.equal(en(field(next, t.error), 0), t.none);
   });
@@ -86,23 +86,23 @@ test('Tidy event sorts and deduplicates a list with a payload-free Enum', () => 
 test('Pick follows a path and Drop removes that path', () => {
   const initial = withField(withField(store, t.data, map(t.a, 1, t.b, 2)), t.error, c.get(map(t.error, 'previous path error'), t.error));
   for (const tag of [t.pick, t.drop]) {
-    const next = updater(initial, c._$o__$o_(tag, c._$L_(t.a)), 'keys', 1);
+    const next = updater(initial, decode_op(c._$o__$o_(tag, c._$L_(t.a))), 'keys', 1);
     assert.deepEqual(c.to_js_data(field(next, t.data)), tag === t.pick ? 1 : { b: 2 });
     assert.equal(en(field(next, t.error), 0), t.none);
   }
 });
 test('Pick unwraps Option for list entries and preserves missing paths as nil', () => {
   const initial = withField(store, t.data, c._$L_(map(t.a, 1), map(t.b, 2)));
-  const next = updater(initial, c._$o__$o_(t.pick, c._$L_(t.a)), 'pick-list', 1);
+  const next = updater(initial, decode_op(c._$o__$o_(t.pick, c._$L_(t.a))), 'pick-list', 1);
   assert.deepEqual(c.to_js_data(field(next, t.data)), [1, null]);
 });
 
 test('state cursors accept Tag/String/Number and reject Bool without restricting data keys', () => {
   for (const key of [t.a, 'panel', 7]) {
-    const next = updater(store, c._$o__$o_(t.states, c._$L_(key), false), 'state', 1);
+    const next = updater(store, decode_op(c._$o__$o_(t.states, c._$L_(key), false)), 'state', 1);
     assert.equal(field(field(field(next, t.states), key), t.data), false);
   }
-  assert.throws(() => updater(store, c._$o__$o_(t.states, c._$L_(true), false), 'invalid-state', 1));
-  const next = updater(store, c._$o__$o_(t.data, map(t.data, map(true, 'preserved'), t.error, null)), 'data', 1);
+  assert.throws(() => updater(store, decode_op(c._$o__$o_(t.states, c._$L_(true), false)), 'invalid-state', 1));
+  const next = updater(store, decode_op(c._$o__$o_(t.data, map(t.data, map(true, 'preserved'), t.error, null))), 'data', 1);
   assert.equal(field(field(next, t.data), true), 'preserved');
 });
