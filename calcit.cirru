@@ -34,7 +34,7 @@
                 {}
                   :class-name $ str-spaced css/preset css/row css/fullscreen css/global css/flex
                   :style $ &{} :width |100%
-                comp-drafter (>> states :drafter) store
+                comp-drafter store
                 space-x 2
                 comp-previewer (>> states :previewer) store on-op
                 if config/dev?
@@ -49,15 +49,16 @@
             Fn app.schema/Op $ -> Unit
             -> respo.schema/Component
         'comp-drafter $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defcomp comp-drafter (states store)
+          :code $ quote $ defcomp comp-drafter (store)
             let
-                handle-result $ fn (f d!)
+                parse-op $ fn (parse!)
+                  hint-fn $ Fn
+                    Fn $ -> Dynamic
+                    -> app.schema/Op
                   try
-                    let
-                        data $ f
-                      d! $ app.schema/Op :data data $ Option :none
+                    app.schema/Op :data (parse!) (Option :none)
                     fn (err)
-                      d! $ app.schema/Op :data nil $ Option :some err
+                      app.schema/Op :data nil $ Option :some err
               div
                 {} $ :class-name $ str-spaced css/flex css/column
                 div
@@ -70,46 +71,39 @@
                         :background-color $ hsl 200 90 64
                         :border-color $ hsl 200 90 64
                       :on-click $ fn (e d!)
-                        handle-result
-                          fn () $ to-calcit-data $ parse-json5 (:text store)
-                          , d!
+                        d! $ parse-op $ fn ()
+                          to-calcit-data $ parse-json5 $ :text store
                     space-x 8
                     button $ {} (:inner-text "|Read Cirru") (:class-name css/button)
                       :on-click $ fn (e d!)
-                        handle-result
-                          fn () $ parse-cirru-edn $ :text store
-                          , d!
+                        d! $ parse-op $ fn ()
+                          parse-cirru-edn $ :text store
                     space-x 8
                     a $ {} (:inner-text "|Read EDN")
                       :class-name $ str-spaced css/link
                       :on-click $ fn (e d!)
-                        handle-result
-                          fn () $ to-calcit-data $ jsedn/toJS
-                            jsedn/parse $ :text store
-                          , d!
+                        d! $ parse-op $ fn ()
+                          to-calcit-data $ jsedn/toJS $ jsedn/parse (:text store)
                     a $ {} (:inner-text "|Read JSON")
                       :class-name $ str-spaced css/link
                       :on-click $ fn (e d!)
-                        handle-result
-                          fn () $ to-calcit-data $ js/JSON.parse (:text store)
-                          , d!
+                        d! $ parse-op $ fn ()
+                          to-calcit-data $ js/JSON.parse $ :text store
                     ; a $ {} (:inner-text "|Read CSON")
                       :style $ merge ui/link
                       :on-click $ fn (e d!)
-                        handle-result
-                          fn () $ CSON/parse $ :text store
-                          , d!
+                        d! $ parse-op $ fn ()
+                          CSON/parse $ :text store
                 comp-input-area (:text store)
                   fn (content d!)
                     hint-fn $ Fn String
                       Fn app.schema/Op $ -> Unit
                       -> Unit
-                    handle-result
-                      fn () $ to-calcit-data $ parse-json5 content
-                      , d!
+                    d! $ parse-op $ fn ()
+                      to-calcit-data $ parse-json5 content
                     , &unit
           :examples $ []
-          :schema $ quote $ Fn Dynamic app.schema/Store (-> respo.schema/Component) (:features :js-ffi)
+          :schema $ quote $ Fn app.schema/Store (-> respo.schema/Component) (:features :js-ffi)
         'comp-input-area $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-input-area (text on-parse)
             textarea $ {} (:value text) (:autofocus true) (:placeholder |Paste-EDN-here,-press-Command-Enter)
@@ -464,32 +458,6 @@
                   Op :states
                     decode-map-as cursor $ List app.schema/CursorKey
                     , data
-                (:hydrate-storage data)
-                  Op :hydrate-storage $ if (struct? data)
-                    struct-match data
-                      Store checked $ decode-map-as (.to-map checked) Store
-                      _ _ $ raise "|Expected a Store struct"
-                    decode-map-as data Store
-                (:text text)
-                  Op :text $ decode-map-as text String
-                (:display-type mode)
-                  Op :display-type $ decode-map-as mode DisplayType
-                (:pick path)
-                  Op :pick $ decode-map-as path $ List Dynamic
-                (:drop path)
-                  Op :drop $ decode-map-as path $ List Dynamic
-                (:data data)
-                  let
-                      result $ decode-map-as data $ Map Tag Dynamic
-                      error $ match (get result :error)
-                        (:some error)
-                          if (nil? error) (Option :none)
-                            Option :some $ str error
-                        (:none) (Option :none)
-                    match (get result :data)
-                      (:some value) (Op :data value error)
-                      (:none) (Op :data nil error)
-                (:tidy) (Op :tidy)
                 _ $ Op :unknown $ str raw
           :examples $ []
           :schema $ quote $ Fn AnyEnum (-> app.schema/Op) (:open :decode)
