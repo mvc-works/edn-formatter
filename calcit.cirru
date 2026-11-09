@@ -12,7 +12,7 @@
       :defs $ {}
         'FracturedFormatterHost $ %{} 'CodeEntry (:doc |)
           :code $ quote $ deftrait FracturedFormatterHost
-            .serialize $ Fn FracturedFormatterHost Dynamic $ -> (JsNullish JsObject)
+            .serialize $ Fn FracturedFormatterHost Dynamic $ -> (JsNullish String)
           :examples $ []
           :ffi $ {} (:backend :js) (:kind :external-object) (:target :browser)
             :names $ {} $ :serialize |Serialize
@@ -20,7 +20,7 @@
         'Json5Host $ %{} 'CodeEntry (:doc |)
           :code $ quote $ deftrait Json5Host
             .parse $ Fn Json5Host String $ -> Dynamic
-            .stringify $ Fn Json5Host Dynamic Dynamic Number $ -> (JsNullish JsObject)
+            .stringify $ Fn Json5Host Dynamic Nil Number $ -> (JsNullish String)
           :examples $ []
           :ffi $ {} (:backend :js) (:kind :external-object) (:target :browser)
             :names $ {} (:parse |parse) (:stringify |stringify)
@@ -218,14 +218,14 @@
           :schema $ quote $ Fn app.schema/DisplayType app.schema/DisplayType String (-> respo.schema/Component)
         'comp-type-selector $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-type-selector (current-type)
-            list-> ({})
+            keyed-> ({})
               []
-                [] :json $ comp-type-label current-type (schema/DisplayType :json) |JSON
-                [] :cirru-edn $ comp-type-label current-type (schema/DisplayType :cirru-edn) |Cirru-EDN
-                [] :json5 $ comp-type-label current-type (schema/DisplayType :json5) |JSON5
-                [] :f-json $ comp-type-label current-type (schema/DisplayType :f-json) |Fractured
-                [] :cson $ comp-type-label current-type (schema/DisplayType :cson) |CSON
-                [] :edn $ comp-type-label current-type (schema/DisplayType :edn) |EDN
+                keyed-component :json $ comp-type-label current-type (schema/DisplayType :json) |JSON
+                keyed-component :cirru-edn $ comp-type-label current-type (schema/DisplayType :cirru-edn) |Cirru-EDN
+                keyed-component :json5 $ comp-type-label current-type (schema/DisplayType :json5) |JSON5
+                keyed-component :f-json $ comp-type-label current-type (schema/DisplayType :f-json) |Fractured
+                keyed-component :cson $ comp-type-label current-type (schema/DisplayType :cson) |CSON
+                keyed-component :edn $ comp-type-label current-type (schema/DisplayType :edn) |EDN
           :examples $ []
           :schema $ quote $ Fn app.schema/DisplayType (-> respo.schema/Component)
         'css-type-label $ %{} 'CodeEntry (:doc |)
@@ -282,7 +282,7 @@
           :require
             respo-ui.core :refer $ hsl
             respo-ui.core :as ui
-            respo.core :refer $ defcomp >> list-> <> div button span textarea pre a defeffect
+            respo.core :refer $ defcomp >> keyed-> keyed-component <> div button span textarea pre a defeffect
             respo.comp.space :refer $ space-x space-y
             respo.comp.inspect :refer $ comp-inspect
             reel.comp.reel :refer $ comp-typed-reel
