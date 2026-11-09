@@ -26,7 +26,7 @@
             :names $ {} (:parse |parse) (:stringify |stringify)
           :schema $ quote Trait
         'comp-container $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defcomp comp-container (reel)
+          :code $ quote $ defcomp comp-container (reel on-control on-op)
             let
                 store $ :store reel
                 states $ :states store
@@ -36,15 +36,18 @@
                   :style $ &{} :width |100%
                 comp-drafter (>> states :drafter) store
                 space-x 2
-                comp-previewer (>> states :previewer) store
+                comp-previewer (>> states :previewer) store on-op
                 if config/dev?
                   Option :some $ comp-inspect |state store $ {} (:bottom 8)
                   Option :none
                 if config/dev?
-                  Option :some $ comp-typed-reel (>> states :reel) reel $ {}
+                  Option :some $ comp-typed-reel (>> states :reel) reel ({}) on-control
                   Option :none
           :examples $ []
-          :schema $ quote $ Fn (reel.typed/State app.schema/Op app.schema/Store) (-> respo.schema/Component)
+          :schema $ quote $ Fn (reel.typed/State app.schema/Op app.schema/Store)
+            Fn reel.typed/Control $ -> Unit
+            Fn app.schema/Op $ -> Unit
+            -> respo.schema/Component
         'comp-drafter $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-drafter (states store)
             let
@@ -136,7 +139,7 @@
             -> respo.schema/Component
             :features :js-ffi
         'comp-previewer $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defcomp comp-previewer (states store)
+          :code $ quote $ defcomp comp-previewer (states store on-op)
             let
                 picker-plugin $ use-prompt (>> states :picker)
                   {} $ :title "|Pick data"
@@ -152,35 +155,35 @@
                     a $ {} (:inner-text |Pick) (:class-name css/link)
                       :on-click $ fn (e d!)
                         hint-fn $ Fn respo.schema/RespoEvent
-                          Fn AnyEnum $ -> Unit
+                          Fn *dispatch-op $ -> Unit
                           -> Unit
                         .show picker-plugin d! $ fn (text)
                           hint-fn $ Fn String $ -> Unit
                           try
                             when
                               not $ blank? text
-                              d! $ app.schema/Op :pick $ decode-map-as
+                              on-op $ app.schema/Op :pick $ decode-map-as
                                 parse-cirru-edn $ str "|[] " $ trim text
                                 List Dynamic
                             fn (message)
-                              d! $ app.schema/Op :data (:data store) (Option :some message)
+                              on-op $ app.schema/Op :data (:data store) (Option :some message)
                           , &unit
                         , &unit
                     a $ {} (:inner-text |Drop) (:class-name css/link)
                       :on-click $ fn (e d!)
                         hint-fn $ Fn respo.schema/RespoEvent
-                          Fn AnyEnum $ -> Unit
+                          Fn *dispatch-op $ -> Unit
                           -> Unit
                         .show picker-plugin d! $ fn (text)
                           hint-fn $ Fn String $ -> Unit
                           try
                             when
                               not $ blank? text
-                              d! $ app.schema/Op :drop $ decode-map-as
+                              on-op $ app.schema/Op :drop $ decode-map-as
                                 parse-cirru-edn $ str "|[] " $ trim text
                                 List Dynamic
                             fn (message)
-                              d! $ app.schema/Op :data (:data store) (Option :some message)
+                              on-op $ app.schema/Op :data (:data store) (Option :some message)
                           , &unit
                         , &unit
                     a $ {} (:inner-text "|Tidy list") (:class-name css/link)
@@ -205,7 +208,9 @@
                       :style $ {} (:overflow :auto) (:white-space :pre) (:line-height |16px) (:font-size 12) (:border :none)
                 .render picker-plugin
           :examples $ []
-          :schema $ quote $ Fn Dynamic app.schema/Store (-> respo.schema/Component)
+          :schema $ quote $ Fn respo.schema/States app.schema/Store
+            Fn app.schema/Op $ -> Unit
+            -> respo.schema/Component
         'comp-type-label $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-type-label (current-type k label)
             div
@@ -321,18 +326,14 @@
         'dispatch! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn dispatch! (op)
             when config/dev? $ println |Dispatch: op
-            let
-                resolved $ match (typed/decode-control op)
-                  (:some control) control
-                  (:none) (schema/decode-op op)
-              reset! *reel $ match (decode-map-as resolved app.schema/ResolvedOp)
-                (reel.typed/Control control) (typed/apply-control updater @*reel control)
-                (app.schema/Op action)
-                  typed/record-op updater @*reel action (generate-id!)
-                    :timestamp $ shared/date-now-snapshot
+            reset! *reel $ match op
+              (reel.typed/Control control) (typed/apply-control updater @*reel control)
+              (app.schema/Op action)
+                typed/record-op updater @*reel action (generate-id!)
+                  :timestamp $ shared/date-now-snapshot
             , &unit
           :examples $ []
-          :schema $ quote $ Fn AnyEnum (-> Unit) (:open :decode)
+          :schema $ quote $ Fn app.schema/ResolvedOp (-> Unit) (:features :js-ffi)
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! ()
             println "|Running mode:" $ if config/dev?
@@ -340,7 +341,7 @@
               , |release
             render-app!
             add-watch! *reel :changes $ fn (r p) (render-app!)
-            listen-devtools! |a dispatch!
+            listen-devtools! |a on-control!
             set-before-unload! $ fn (event) (persist-storage!)
             ; repeat! 60 persist-storage!
             ; let
@@ -360,6 +361,10 @@
             narrow-element $ .unwrap $ query-selector |.app
           :examples $ []
           :schema $ quote respo.dom/DomElement
+        'on-control! $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn on-control! (control) (dispatch! control)
+          :examples $ []
+          :schema $ quote $ Fn reel.typed/Control (-> Unit)
         'persist-storage! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn persist-storage! ()
             let
@@ -383,13 +388,19 @@
           :schema $ quote $ Fn (-> Unit)
         'render-app! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-app! ()
-            render! mount-target (comp-container @*reel) dispatch!
+            render-with! mount-target
+              fn () $ comp-container @*reel on-control! $ fn (op)
+                hint-fn $ Fn app.schema/Op $ -> Unit
+                dispatch! op
+              fn (raw-op)
+                hint-fn $ Fn *dispatch-op $ -> Unit
+                dispatch! $ schema/decode-op raw-op
           :examples $ []
           :schema $ quote $ Fn (-> Unit)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.main
           :require
-            respo.core :refer $ render! clear-cache! realize-ssr!
+            respo.core :refer $ render-with! clear-cache! realize-ssr!
             app.comp.container :refer $ comp-container
             app.updater :refer $ updater
             app.schema :as schema
@@ -409,7 +420,7 @@
           :examples $ []
           :schema $ quote UnionDef
         'DispatchOp $ %{} 'CodeEntry
-          :doc "|Open Enum alias for the Respo dispatch slot. The representative value is not dispatched; app, Alerts and Reel operations keep their existing constructors and runtime decoding."
+          :doc "|Respo event boundary for the anonymous states sent by Alerts Prompt and the app Op. Reel Control has a separate callback."
           :code $ quote $ def DispatchOp (:: :unhandled)
           :examples $ []
           :schema $ quote AnyEnum
