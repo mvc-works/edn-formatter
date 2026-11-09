@@ -78,7 +78,8 @@ for (const tag of [t.json, t['cirru-edn'], t.json5, t['f-json'], t.cson, t.edn])
 }
 test('Tidy event sorts and deduplicates a list with a payload-free Enum', () => {
   const initial = withField(store, t.data, c._$L_(3, 1, 3, 2));
-  const op = runEvent(handler(comp_previewer(map(), initial), t.click, 'Tidy list'));
+  const preview = comp_previewer(map(), initial, () => assert.fail('Tidy must use Respo dispatch'));
+  const op = runEvent(handler(preview, t.click, 'Tidy list'));
   assert.equal(en(op, 0), t.tidy);
   assert.equal(c._$n_enum_$o_count(op), 1);
   assert.deepEqual(c.to_js_data(field(updater(initial, op, 'tidy', 1), t.data)), [1, 2, 3]);
