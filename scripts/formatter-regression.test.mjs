@@ -8,7 +8,7 @@ import { component_$q_, component_tree, render_node_value } from '../js-out/resp
 import { make_string } from '../js-out/respo.render.html.mjs';
 import { parse, toJS } from '../jsedn-adapter.mjs';
 
-const t = c.init_tags(['event', 'children', 'node', 'click', 'input', 'some', 'none', 'value', 'text', 'data', 'error', 'display-type', 'tidy', 'pick', 'drop', 'states', 'a', 'b', 'json', 'cirru-edn', 'json5', 'f-json', 'cson', 'edn']);
+const t = c.init_tags(['event', 'children', 'node', 'click', 'input', 'some', 'none', 'value', 'text', 'data', 'error', 'display-type', 'parsed', 'path-error', 'ok', 'err', 'tidy', 'pick', 'drop', 'states', 'a', 'b', 'json', 'cirru-edn', 'json5', 'f-json', 'cson', 'edn']);
 const map = c._$n__$M_;
 const field = (v, k) => c.option_$o_unwrap(c.get(v, k));
 const nth = (v, i) => c.option_$o_unwrap(c.nth(v, i));
@@ -46,19 +46,29 @@ for (const [label, source] of [['Read JSON', '{a: 1,}'], ['Read JSON', '{"a":1}'
   test(`${label} dispatches parsed data accepted by updater`, () => {
     const initial = withField(store, t.text, source);
     const op = runEvent(handler(comp_drafter(initial), t.click, label));
-    assert.equal(en(op, 0), t.data);
+    assert.equal(en(op, 0), t.parsed);
+    assert.equal(en(en(op, 1), 0), t.ok);
     const next = updater(initial, decode_op(op), 'read', 1);
     assert.deepEqual(c.to_js_data(field(next, t.data)), { a: 1 });
     assert.equal(en(field(next, t.error), 0), t.none);
   });
 }
 test('invalid JSON preserves an error rather than throwing through event dispatch', () => {
-  const initial = withField(store, t.text, '{broken');
+  const initial = withField(withField(store, t.data, map(t.a, 1)), t.text, '{broken');
   const op = runEvent(handler(comp_drafter(initial), t.click, 'Read JSON'));
+  assert.equal(en(op, 0), t.parsed);
+  assert.equal(en(en(op, 1), 0), t.err);
   const next = updater(initial, op, 'invalid', 1);
   assert.equal(field(next, t.data), null);
   assert.equal(en(field(next, t.error), 0), t.some);
   assert.ok(c.option_$o_unwrap(field(next, t.error)).length > 0);
+});
+test('path input errors preserve the current formatted value', () => {
+  const value = map(t.a, 3);
+  const current = withField(store, t.data, value);
+  const next = updater(current, decode_op(action(t['path-error'], 'Invalid path')), 'path-error', 1);
+  assert.equal(field(next, t.data), value);
+  assert.equal(c.option_$o_unwrap(field(next, t.error)), 'Invalid path');
 });
 test('input and display selector use single Enum operations', () => {
   const op = runEvent(handler(comp_input_area('', () => {}), t.input), map(t.value, '{a:2}'));
@@ -105,7 +115,7 @@ test('state cursors accept Tag/String/Number and reject Bool without restricting
     assert.equal(field(field(field(next, t.states), key), t.data), false);
   }
   assert.throws(() => updater(store, decode_op(c._$o__$o_(t.states, c._$L_(true), false)), 'invalid-state', 1));
-  const next = updater(store, decode_op(action(t.data, map(true, 'preserved'), c.get(map(), t.error))), 'data', 1);
+  const next = updater(store, decode_op(action(t.parsed, c._PCT__$o__$o_(c.Result, t.ok, map(true, 'preserved')))), 'data', 1);
   const picked = updater(next, decode_op(action(t.pick, c._$L_(true))), 'pick-bool', 2);
   assert.equal(field(picked, t.data), 'preserved');
 });
