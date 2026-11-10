@@ -56,9 +56,9 @@
                     Fn $ -> Dynamic
                     -> app.schema/Op
                   try
-                    app.schema/Op :data (parse!) (Option :none)
+                    app.schema/Op :parsed $ Result :ok $ parse!
                     fn (err)
-                      app.schema/Op :data nil $ Option :some err
+                      app.schema/Op :parsed $ Result :err err
               div
                 {} $ :class-name $ str-spaced css/flex css/column
                 div
@@ -160,7 +160,7 @@
                                 parse-cirru-edn $ str "|[] " $ trim text
                                 List Dynamic
                             fn (message)
-                              on-op $ app.schema/Op :data (:data store) (Option :some message)
+                              on-op $ app.schema/Op :path-error message
                           , &unit
                         , &unit
                     a $ {} (:inner-text |Drop) (:class-name css/link)
@@ -177,7 +177,7 @@
                                 parse-cirru-edn $ str "|[] " $ trim text
                                 List Dynamic
                             fn (message)
-                              on-op $ app.schema/Op :data (:data store) (Option :some message)
+                              on-op $ app.schema/Op :path-error message
                           , &unit
                         , &unit
                     a $ {} (:inner-text "|Tidy list") (:class-name css/link)
@@ -430,7 +430,8 @@
             :display-type app.schema/DisplayType
             :pick $ List Dynamic
             :drop $ List Dynamic
-            :data Dynamic $ Option String
+            :parsed $ Result Dynamic String
+            :path-error String
             :tidy
             :unknown String
           :examples $ []
@@ -509,8 +510,16 @@
                 struct-with store
                   :data $ drop-from (:data store) path
                   :error $ Option :none
-              (:data data error)
-                struct-with store (:data data) (:error error)
+              (:parsed result)
+                match result
+                  (:ok data)
+                    struct-with store (:data data)
+                      :error $ Option :none
+                  (:err message)
+                    struct-with store (:data nil)
+                      :error $ Option :some message
+              (:path-error message)
+                assoc store :error $ Option :some message
               (:tidy)
                 update store :data $ fn (data)
                   if (list? data)
