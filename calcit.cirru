@@ -6,7 +6,7 @@
     {} (:description |) (:init-fn 'app.main/main!) (:mode :js) (:reload-fn 'app.main/reload!) (:target :browser)
       :feature-policy $ {}
       :modules $ [] |respo.calcit/ |respo-ui.calcit/ |reel.calcit/ |alerts.calcit/
-      :type-slots $ {} $ :dispatch-op 'app.schema/DispatchOp
+      :type-slots $ {} $ :dispatch-op 'app.schema/Op
   :files $ {}
     'app.comp.container $ %{} 'FileEntry
       :defs $ {}
@@ -38,15 +38,15 @@
                 space-x 2
                 comp-previewer (>> states :previewer) store on-op
                 if config/dev?
-                  Option :some $ comp-inspect |state store $ {} (:bottom 8)
-                  Option :none
+                  Some $ comp-inspect |state store $ {} (:bottom 8)
+                  , None
                 if config/dev?
-                  Option :some $ comp-typed-reel (>> states :reel) reel ({}) on-control
-                  Option :none
+                  Some $ comp-typed-reel (>> states :reel) reel ({}) on-control
+                  , None
           :examples $ []
-          :schema $ quote $ Fn (reel.typed/State app.schema/Op app.schema/Store)
+          :schema $ quote $ Fn (reel.typed/State schema/Op schema/Store)
             Fn reel.typed/Control $ -> Unit
-            Fn app.schema/Op $ -> Unit
+            Fn schema/Op $ -> Unit
             -> respo.schema/Component
         'comp-drafter $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-drafter (store)
@@ -103,7 +103,7 @@
                       to-calcit-data $ parse-json5 content
                     , &unit
           :examples $ []
-          :schema $ quote $ Fn app.schema/Store (-> respo.schema/Component) (:features :js-ffi)
+          :schema $ quote $ Fn schema/Store (-> respo.schema/Component) (:features :js-ffi)
         'comp-input-area $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-input-area (text on-parse)
             textarea $ {} (:value text) (:autofocus true) (:placeholder |Paste-EDN-here,-press-Command-Enter)
@@ -128,7 +128,7 @@
           :examples $ []
           :schema $ quote $ Fn String
             Fn String
-              Fn app.schema/Op $ -> Unit
+              Fn schema/Op $ -> Unit
               -> Unit
             -> respo.schema/Component
             :features :js-ffi
@@ -202,8 +202,8 @@
                       :style $ {} (:overflow :auto) (:white-space :pre) (:line-height |16px) (:font-size 12) (:border :none)
                 .render picker-plugin
           :examples $ []
-          :schema $ quote $ Fn respo.schema/States app.schema/Store
-            Fn app.schema/Op $ -> Unit
+          :schema $ quote $ Fn respo.schema/States schema/Store
+            Fn schema/Op $ -> Unit
             -> respo.schema/Component
         'comp-type-label $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-type-label (current-type k label)
@@ -215,7 +215,7 @@
                   d! $ app.schema/Op :display-type k
               <> label
           :examples $ []
-          :schema $ quote $ Fn app.schema/DisplayType app.schema/DisplayType String (-> respo.schema/Component)
+          :schema $ quote $ Fn schema/DisplayType schema/DisplayType String (-> respo.schema/Component)
         'comp-type-selector $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-type-selector (current-type)
             keyed-> ({})
@@ -227,7 +227,7 @@
                 keyed-component :cson $ comp-type-label current-type (schema/DisplayType :cson) |CSON
                 keyed-component :edn $ comp-type-label current-type (schema/DisplayType :edn) |EDN
           :examples $ []
-          :schema $ quote $ Fn app.schema/DisplayType (-> respo.schema/Component)
+          :schema $ quote $ Fn schema/DisplayType (-> respo.schema/Component)
         'css-type-label $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstyle css-type-label
             {}
@@ -249,7 +249,7 @@
               (:f-json) (stringify-fractured-json data)
               _ $ str "|Unknown type: " type
           :examples $ []
-          :schema $ quote $ Fn Dynamic app.schema/DisplayType (-> String) (:features :js-ffi)
+          :schema $ quote $ Fn Dynamic schema/DisplayType (-> String) (:features :js-ffi)
         'parse-json5 $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn parse-json5 (content)
             let
@@ -316,7 +316,7 @@
         '*reel $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defref *reel (typed/new-reel schema/store)
           :examples $ []
-          :schema $ quote $ Ref (reel.typed/State app.schema/Op app.schema/Store)
+          :schema $ quote $ Ref (typed/State schema/Op schema/Store)
         'dispatch! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn dispatch! (op)
             when config/dev? $ println |Dispatch: op
@@ -327,7 +327,7 @@
                   :timestamp $ shared/date-now-snapshot
             , &unit
           :examples $ []
-          :schema $ quote $ Fn app.schema/ResolvedOp (-> Unit) (:features :js-ffi)
+          :schema $ quote $ Fn schema/ResolvedOp (-> Unit) (:features :js-ffi)
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! ()
             println "|Running mode:" $ if config/dev?
@@ -358,7 +358,7 @@
         'on-control! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn on-control! (control) (dispatch! control)
           :examples $ []
-          :schema $ quote $ Fn reel.typed/Control (-> Unit)
+          :schema $ quote $ Fn typed/Control (-> Unit)
         'persist-storage! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn persist-storage! ()
             let
@@ -413,11 +413,6 @@
           :code $ quote $ defunion CursorKey Tag String Number
           :examples $ []
           :schema $ quote UnionDef
-        'DispatchOp $ %{} 'CodeEntry
-          :doc "|Respo event boundary for the anonymous states sent by Alerts Prompt and the app Op. Reel Control has a separate callback."
-          :code $ quote $ def DispatchOp (:: :unhandled)
-          :examples $ []
-          :schema $ quote AnyEnum
         'DisplayType $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defenum DisplayType (:json) (:cirru-edn) (:json5) (:f-json) (:cson) (:edn)
           :examples $ []
@@ -452,7 +447,7 @@
         'decode-op $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn decode-op (raw)
             if
-              = (enum-definition raw) (Option :some Op)
+              = (enum-definition raw) (Some Op)
               decode-map-as raw Op
               match raw
                 (:states cursor data)
@@ -461,12 +456,12 @@
                     , data
                 _ $ Op :unknown $ str raw
           :examples $ []
-          :schema $ quote $ Fn AnyEnum (-> app.schema/Op) (:open :decode)
+          :schema $ quote $ Fn AnyEnum (-> Op) (:open :decode)
         'store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def store
-            Store :states (&{}) :text | :data nil :error (Option :none) :display-type $ DisplayType :json
+            Store :states (&{}) :text | :data nil :error None :display-type $ DisplayType :json
           :examples $ []
-          :schema $ quote app.schema/Store
+          :schema $ quote Store
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.schema
     'app.updater $ %{} 'FileEntry
@@ -480,7 +475,7 @@
                 map data $ fn (child) (dissoc-in child xs)
               true data
           :examples $ []
-          :schema $ quote $ Fn Dynamic (List Dynamic) (-> Dynamic)
+          :schema $ quote $ Fn T (List K) (-> Dynamic) (:generics T K)
         'pick-from $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn pick-from (data xs)
             if (empty? xs) data $ cond
@@ -491,7 +486,7 @@
                   .unwrap-or (get-in child xs) nil
               true data
           :examples $ []
-          :schema $ quote $ Fn Dynamic (List Dynamic) (-> Dynamic)
+          :schema $ quote $ Fn T (List K) (-> Dynamic) (:generics T K)
         'updater $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn updater (store op _op-id _op-time)
             match op
@@ -505,21 +500,20 @@
               (:pick path)
                 struct-with store
                   :data $ pick-from (:data store) path
-                  :error $ Option :none
+                  :error None
               (:drop path)
                 struct-with store
                   :data $ drop-from (:data store) path
-                  :error $ Option :none
+                  :error None
               (:parsed result)
                 match result
                   (:ok data)
-                    struct-with store (:data data)
-                      :error $ Option :none
+                    struct-with store (:data data) (:error None)
                   (:err message)
                     struct-with store (:data nil)
-                      :error $ Option :some message
+                      :error $ Some message
               (:path-error message)
-                assoc store :error $ Option :some message
+                assoc store :error $ Some message
               (:tidy)
                 update store :data $ fn (data)
                   if (list? data)
@@ -528,7 +522,7 @@
               (:unknown message)
                 do (eprintln "|Unknown op:" message) store
           :examples $ []
-          :schema $ quote $ Fn app.schema/Store app.schema/Op String Number (-> app.schema/Store)
+          :schema $ quote $ Fn schema/Store schema/Op String Number (-> schema/Store)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.updater
           :require
