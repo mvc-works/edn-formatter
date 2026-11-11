@@ -475,7 +475,7 @@
                 map data $ fn (child) (dissoc-in child xs)
               true data
           :examples $ []
-          :schema $ quote $ Fn Dynamic (List Dynamic) (-> Dynamic)
+          :schema $ quote $ Fn T (List K) (-> Dynamic) (:generics T K)
         'pick-from $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn pick-from (data xs)
             if (empty? xs) data $ cond
@@ -486,7 +486,7 @@
                   .unwrap-or (get-in child xs) nil
               true data
           :examples $ []
-          :schema $ quote $ Fn Dynamic (List Dynamic) (-> Dynamic)
+          :schema $ quote $ Fn T (List K) (-> Dynamic) (:generics T K)
         'updater $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn updater (store op _op-id _op-time)
             match op
