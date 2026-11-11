@@ -249,7 +249,7 @@
               (:f-json) (stringify-fractured-json data)
               _ $ str "|Unknown type: " type
           :examples $ []
-          :schema $ quote $ Fn Dynamic schema/DisplayType (-> String) (:features :js-ffi)
+          :schema $ quote $ Fn Input schema/DisplayType (-> String) (:generics Input) (:features :js-ffi)
         'parse-json5 $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn parse-json5 (content)
             let
@@ -264,14 +264,14 @@
                 serialized $ .serialize formatter $ to-js-data data
               expect-string |formatter-output serialized
           :examples $ []
-          :schema $ quote $ Fn Dynamic (-> String) (:features :js-ffi)
+          :schema $ quote $ Fn Input (-> String) (:generics Input) (:features :js-ffi)
         'stringify-json5 $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn stringify-json5 (data)
             let
                 parser $ js-cast JSON5 'app.comp.container/Json5Host
               expect-string |formatter-output $ .stringify parser (to-js-data data) nil 2
           :examples $ []
-          :schema $ quote $ Fn Dynamic (-> String) (:features :js-ffi)
+          :schema $ quote $ Fn Input (-> String) (:generics Input) (:features :js-ffi)
         'style-button $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def style-button
             {} (:border-radius |4px) (:line-height |26px) (:padding "|0 12px")
