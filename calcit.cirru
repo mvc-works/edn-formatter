@@ -327,7 +327,7 @@
                   :timestamp $ shared/date-now-snapshot
             , &unit
           :examples $ []
-          :schema $ quote $ Fn schema/ResolvedOp (-> Unit) (:features :js-ffi)
+          :schema $ quote $ Fn schema/ResolvedOp (-> Unit) (:features :io :js-ffi :state)
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! ()
             println "|Running mode:" $ if config/dev?
@@ -349,7 +349,7 @@
             js/console.warn "|injected window.showData showing data as js object."
             println "|App started."
           :examples $ []
-          :schema $ quote $ Fn (-> Unit) (:features :js-ffi)
+          :schema $ quote $ Fn (-> Unit) (:features :io :js-ffi :state)
         'mount-target $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def mount-target
             narrow-element $ .unwrap $ query-selector |.app
@@ -358,7 +358,7 @@
         'on-control! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn on-control! (control) (dispatch! control)
           :examples $ []
-          :schema $ quote $ Fn typed/Control (-> Unit)
+          :schema $ quote $ Fn typed/Control (-> Unit) (:features :io :state)
         'persist-storage! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn persist-storage! ()
             let
@@ -368,7 +368,7 @@
                 format-cirru-edn store
               , &unit
           :examples $ []
-          :schema $ quote $ Fn (-> Unit) (:features :js-ffi)
+          :schema $ quote $ Fn (-> Unit) (:features :js-ffi :state)
         'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn reload! ()
             if (nil? build-errors)
@@ -379,7 +379,7 @@
               hud! |error build-errors
             , &unit
           :examples $ []
-          :schema $ quote $ Fn (-> Unit)
+          :schema $ quote $ Fn (-> Unit) (:features :io :state)
         'render-app! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-app! ()
             render-with! mount-target
@@ -390,7 +390,7 @@
                 hint-fn $ Fn *dispatch-op $ -> Unit
                 dispatch! $ schema/decode-op raw-op
           :examples $ []
-          :schema $ quote $ Fn (-> Unit)
+          :schema $ quote $ Fn (-> Unit) (:features :io :state)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.main
           :require
@@ -522,7 +522,7 @@
               (:unknown message)
                 do (eprintln "|Unknown op:" message) store
           :examples $ []
-          :schema $ quote $ Fn schema/Store schema/Op String Number (-> schema/Store)
+          :schema $ quote $ Fn schema/Store schema/Op String Number (-> schema/Store) (:features :io)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.updater
           :require
