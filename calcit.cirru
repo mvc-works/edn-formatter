@@ -54,7 +54,7 @@
                 parse-op $ fn (parse!)
                   hint-fn $ Fn
                     Fn $ -> Dynamic
-                    -> app.schema/Op
+                    -> schema/Op
                   try
                     app.schema/Op :parsed $ Result :ok $ parse!
                     fn (err)
@@ -97,7 +97,7 @@
                 comp-input-area (:text store)
                   fn (content d!)
                     hint-fn $ Fn String
-                      Fn app.schema/Op $ -> Unit
+                      Fn schema/Op $ -> Unit
                       -> Unit
                     d! $ parse-op $ fn ()
                       to-calcit-data $ parse-json5 content
@@ -115,7 +115,7 @@
                   , String
               :on-keydown $ fn (e d!)
                 hint-fn $ Fn respo.schema/RespoEvent
-                  Fn app.schema/Op $ -> Unit
+                  Fn schema/Op $ -> Unit
                   -> Unit
                   :features :js-ffi
                 let
@@ -384,7 +384,7 @@
           :code $ quote $ defn render-app! ()
             render-with! mount-target
               fn () $ comp-container @*reel on-control! $ fn (op)
-                hint-fn $ Fn app.schema/Op $ -> Unit
+                hint-fn $ Fn schema/Op $ -> Unit
                 dispatch! op
               fn (raw-op)
                 hint-fn $ Fn *dispatch-op $ -> Unit
