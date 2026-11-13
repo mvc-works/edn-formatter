@@ -447,7 +447,8 @@
         'decode-op $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn decode-op (raw)
             if
-              = (enum-definition raw) (Some Op)
+              and (enum? raw)
+                = (enum-definition raw) (Some Op)
               decode-map-as raw Op
               match raw
                 (:states cursor data)
@@ -456,7 +457,7 @@
                     , data
                 _ $ Op :unknown $ str raw
           :examples $ []
-          :schema $ quote $ Fn AnyEnum (-> Op) (:open :decode)
+          :schema $ quote $ Fn Input (-> Op) (:generics Input)
         'store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def store
             Store :states (&{}) :text | :data nil :error None :display-type $ DisplayType :json
