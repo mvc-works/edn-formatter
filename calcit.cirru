@@ -117,12 +117,11 @@
                 hint-fn $ Fn respo.schema/RespoEvent
                   Fn schema/Op $ -> Unit
                   -> Unit
-                  :features :js-ffi
                 let
-                    event $ js-cast (:event e) 'js-ffi.browser/KeyboardEventHost
+                    keyboard $ respo.core/keyboard-info e
                   if
-                    and (.-meta-key? event)
-                      = |Enter $ .-key event
+                    and (:meta? keyboard)
+                      = |Enter $ :key keyboard
                     on-parse text d!
                     , &unit
           :examples $ []

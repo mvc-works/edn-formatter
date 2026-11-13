@@ -5,6 +5,7 @@ import { comp_drafter, comp_input_area, comp_type_label, comp_previewer, display
 import { decode_op, DisplayType, Op, store } from '../js-out/app.schema.mjs';
 import { updater } from '../js-out/app.updater.mjs';
 import { component_$q_, component_tree, render_node_value } from '../js-out/respo.util.detect.mjs';
+import { event__GT_edn } from '../js-out/respo.util.format.mjs';
 import { make_string } from '../js-out/respo.render.html.mjs';
 import { parse, toJS } from '../jsedn-adapter.mjs';
 
@@ -75,6 +76,20 @@ test('input and display selector use single Enum operations', () => {
   assert.equal(field(updater(store, op, 'input', 1), t.text), '{a:2}');
   const selection = runEvent(handler(comp_type_label(mode(t.json), mode(t.edn), 'EDN'), t.click, 'EDN'));
   assert.equal(en(field(updater(store, selection, 'select', 2), t['display-type']), 0), t.edn);
+});
+test('Command-Enter parses using Respo keyboard fields', () => {
+  const parsed = [];
+  const source = '{a:2}';
+  const editor = comp_input_area(source, (text) => { parsed.push(text); });
+  const { keydown } = c.init_tags(['keydown']);
+  const onKeydown = handler(editor, keydown);
+  const event = (key, metaKey) => event__GT_edn({
+    type: 'keydown', key, code: key, metaKey, ctrlKey: false, altKey: false, shiftKey: false, keyCode: 13,
+  });
+  onKeydown(event('Enter', false), () => {});
+  onKeydown(event('Tab', true), () => {});
+  onKeydown(event('Enter', true), () => {});
+  assert.deepEqual(parsed, [source]);
 });
 for (const tag of [t.json, t['cirru-edn'], t.json5, t['f-json'], t.cson, t.edn]) {
   test(`${tag} formatter accepts nominal DisplayType`, () => {
