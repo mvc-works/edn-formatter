@@ -48,6 +48,7 @@
             Fn reel.typed/Control $ -> Unit
             Fn schema/Op $ -> Unit
             -> respo.schema/Component
+            :features :state
         'comp-drafter $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-drafter (store)
             let
@@ -204,6 +205,7 @@
           :schema $ quote $ Fn respo.schema/States schema/Store
             Fn schema/Op $ -> Unit
             -> respo.schema/Component
+            :features :state
         'comp-type-label $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-type-label (current-type k label)
             div
