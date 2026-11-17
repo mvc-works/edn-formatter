@@ -87,6 +87,7 @@ jobs:
       run: |
         set -euo pipefail
         yarn build
+        calcit --reload-fn respo.render.html/make-string js
         node --test scripts/formatter-regression.test.mjs
 
     - name: Retain tested preview
