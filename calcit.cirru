@@ -45,10 +45,10 @@
                   , None
           :examples $ []
           :schema $ quote $ Fn (reel.typed/State schema/Op schema/Store)
-            Fn reel.typed/Control $ -> Unit
+            Fn reel.typed/Control (-> Unit) (:features :io :state)
             Fn schema/Op $ -> Unit
             -> respo.schema/Component
-            :features :state
+            :features :io :state
         'comp-drafter $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-drafter (store)
             let
@@ -205,7 +205,7 @@
           :schema $ quote $ Fn respo.schema/States schema/Store
             Fn schema/Op $ -> Unit
             -> respo.schema/Component
-            :features :state
+            :features :io :state
         'comp-type-label $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-type-label (current-type k label)
             div
@@ -324,8 +324,12 @@
             reset! *reel $ match op
               (reel.typed/Control control) (typed/apply-control updater @*reel control)
               (app.schema/Op action)
-                typed/record-op updater @*reel action (generate-id!)
-                  :timestamp $ shared/date-now-snapshot
+                do
+                  match action
+                    (:unknown message) (eprintln "|Unknown op:" message)
+                    _ &unit
+                  typed/record-op updater @*reel action (generate-id!)
+                    :timestamp $ shared/date-now-snapshot
             , &unit
           :examples $ []
           :schema $ quote $ Fn schema/ResolvedOp (-> Unit) (:features :io :js-ffi :state)
@@ -521,10 +525,9 @@
                   if (list? data)
                     sort (distinct data) &compare
                     , data
-              (:unknown message)
-                do (eprintln "|Unknown op:" message) store
+              (:unknown _message) store
           :examples $ []
-          :schema $ quote $ Fn schema/Store schema/Op String Number (-> schema/Store) (:features :io)
+          :schema $ quote $ Fn schema/Store schema/Op String Number (-> schema/Store)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.updater
           :require
