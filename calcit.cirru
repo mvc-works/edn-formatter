@@ -497,9 +497,7 @@
           :code $ quote $ defn updater (store op _op-id _op-time)
             match op
               (:states cursor state)
-                assoc store :states $ decode-map-as
-                  update-state-tree (:states store) cursor state
-                  Map app.schema/CursorKey Dynamic
+                assoc store :states $ update-state-map (:states store) cursor state
               (:hydrate-storage data) data
               (:text text) (assoc store :text text)
               (:display-type mode) (assoc store :display-type mode)
@@ -528,8 +526,28 @@
               (:unknown _message) store
           :examples $ []
           :schema $ quote $ Fn schema/Store schema/Op String Number (-> schema/Store)
+          :tests $ [] $ %{} 'TestEntry (:name |state-path-preserves-siblings)
+            :code $ quote $ let
+                original $ assoc schema/store :states $ {}
+                  :other $ {} $ :data |keep
+                root $ updater original
+                  schema/Op :states ([])
+                    {} $ :open true
+                  , |id 0
+                nested $ updater original
+                  schema/Op :states ([] :panel |item 2)
+                    {} $ :open true
+                  , |id 0
+              assert= (Result :ok true)
+                get-in (:states root) ([] :data :open)
+              assert= (Result :ok true)
+                get-in (:states nested) ([] :panel |item 2 :data :open)
+              assert= (Result :ok |keep)
+                get-in (:states nested) ([] :other :data)
+              assert= (:data original) (:data nested)
+            :tags $ #{} :unit
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.updater
           :require
-            respo.cursor :refer $ update-state-tree
+            respo.cursor :refer $ update-state-map
             app.schema :as schema
